@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "eolica"
+version = "0.0.1"
+description = "a package to simulate windfarms based on pywake. will also do forecasting of energy output given a timeseries of wind speeds"
+authors = ["marc dünser <marc.duenser@ait.ac.at>"]
+readme = "README.md"
+packages =[{include = "eolica"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12.3"
+numpy = "^1.26.0"
+pandas = "^2.1.1"
+matplotlib = "^3.8.0"
+pathlib = "^1.0.0"
+pydantic = "^2.8.0"
+plotly = ">=5.22.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
