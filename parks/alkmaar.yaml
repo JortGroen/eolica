@@ -1,15 +1,23 @@
 wind_turbine_park:
   name: 'alkmaar'
   turbines:
-    - type: 'Turbine Type A'
+    - number: 1
+      type: 'alkmaar2p3MW'
       location:
-        latitude: 35.6895
-        longitude: 139.6917
-    - type: 'Turbine Type B'
+        latitude: 52.592999
+        longitude: 4.752301
+    - number: 2
+      type: 'alkmaar2p3MW'
       location:
-        latitude: 34.0522
-        longitude: 118.2437
-    - type: 'Turbine Type C'
+        latitude: 52.595889
+        longitude: 4.753783
+    - number: 3
+      type: 'alkmaar2p3MW'
       location:
-        latitude: 51.5074
-        longitude: 0.1278
+        latitude: 52.602287
+        longitude: 4.757099
+    - number: 4
+      type: 'alkmaar2p3MW'
+      location:
+        latitude: 52.605192
+        longitude: 4.758576
