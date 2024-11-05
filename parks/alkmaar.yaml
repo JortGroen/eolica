@@ -1,23 +1,26 @@
-wind_turbine_park:
-  name: 'alkmaar'
-  turbines:
-    - number: 1
-      type: 'alkmaar2p3MW'
-      location:
-        latitude: 52.592999
-        longitude: 4.752301
-    - number: 2
-      type: 'alkmaar2p3MW'
-      location:
-        latitude: 52.595889
-        longitude: 4.753783
-    - number: 3
-      type: 'alkmaar2p3MW'
-      location:
-        latitude: 52.602287
-        longitude: 4.757099
-    - number: 4
-      type: 'alkmaar2p3MW'
-      location:
-        latitude: 52.605192
-        longitude: 4.758576
+park_name: 'alkmaar'
+turbines:
+  - number: 1
+    type: 'alkmaar2p3MW'
+    location:
+      latitude: 52.592999
+      longitude: 4.752301
+      altitude: 10.
+  - number: 2
+    type: 'alkmaar2p3MW'
+    location:
+      latitude: 52.595889
+      longitude: 4.753783
+      altitude: 10.
+  - number: 3
+    type: 'alkmaar2p3MW'
+    location:
+      latitude: 52.602287
+      longitude: 4.757099
+      altitude: 10.
+  - number: 4
+    type: 'alkmaar2p3MW'
+    location:
+      latitude: 52.605192
+      longitude: 4.758576
+      altitude: 10.

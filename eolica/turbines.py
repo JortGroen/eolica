@@ -1,15 +1,15 @@
-## here is a list of all the turbine types that one could potentially want to use
-
+## in this file is a list of all the turbine types that one could potentially want to use
 from py_wake.wind_turbines import WindTurbine
 from py_wake.wind_turbines.power_ct_functions import PowerCtTabular
 import numpy as np
 
 ## here is the list of all supported turbines:
 
-## vestas_v90_2MW
+## vestas_v90_2MW_mode0
 ## vestas_v136_3p45MW 
 ## vestas_v136_4p2MW
 ## enercon66_1p8MW
+## alkmaar_2p3MW
 
 
 pc_vestas_v90_2MW_mode0 = np.array(
@@ -41,6 +41,9 @@ class vestas_v90_2MW_mode0(WindTurbine):
                                                             pc_vestas_v90_2MW_mode0[:, 1], 'w',
                                                             ct_vestas_v90_2MW_mode0[:, 1], method=method))
 
+# =====================================================================
+# =====================================================================
+
 pc_vestas_v136_3p45MW = np.array(
 [[ 1.0,   0.], [ 1.5,   0.], [ 2.0,   0.], [ 2.5,   0.], [ 3.0,  49.], [ 3.5, 127.], 
  [ 4.0, 224.], [ 4.5, 339.], [ 5.0, 480.], [ 5.5, 651.], [ 6.0, 857.], [ 6.5,1099.], 
@@ -70,6 +73,9 @@ class vestas_v136_3p45MW(WindTurbine):
                                                             pc_vestas_v136_3p45MW[:, 1], 'w',
                                                             ct_vestas_v136_3p45MW[:, 1], method=method))
 
+# =====================================================================
+# =====================================================================
+
 pc_vestas_v136_4p2MW = np.array(
 [[ 1.0,   0], [ 1.5,   0], [ 2.0,   0], [ 2.5,   0], [ 3.0,  53], [ 3.5, 126], 
  [ 4.0, 215], [ 4.5, 324], [ 5.0, 459], [ 5.5, 624], [ 6.0, 822], [ 6.5,1056], 
@@ -98,6 +104,9 @@ class vestas_v136_4p2MW(WindTurbine):
                              powerCtFunction=PowerCtTabular(pc_vestas_v136_4p2MW[:, 0], 
                                                             pc_vestas_v136_4p2MW[:, 1], 'w',
                                                             ct_vestas_v136_4p2MW[:, 1], method=method))
+
+# =====================================================================
+# =====================================================================
 
 pc_enercon66_1p8MW = np.array(
 [[ 1.0,   0], [ 1.5,   0], [ 2.0,   0], [ 2.5,   0], [ 3.0,   0], [ 3.5,  18],
@@ -129,6 +138,32 @@ class enercon66_1p8MW(WindTurbine):
                                                             pc_enercon66_1p8MW[:, 1], 'w',
                                                             ct_enercon66_1p8MW[:, 1], method=method))
 
+# =====================================================================
+# =====================================================================
 
+# power and ct curvefrom: https://www.uvp-verbund.de/documents-ige-ng/igc_sl/300CF33D-C1D3-4219-A0F4-0B46BA24EC3B/05_Datenblatt_E-82_E2_2300_kW_mit_TES.pdf
+pc_alkmaar_2p3MW = np.array([
+    [ 1.,    0.0], [ 2.,    3.0], [ 3.,   25.0], [ 4.,   82.0], [ 5.,  174.0], [ 6.,  321.0],
+    [ 7.,  532.0], [ 8.,  815.0], [ 9., 1180.0], [10., 1580.0], [11., 1890.0], [12., 2100.0],
+    [13., 2250.0], [14., 2350.0], [15., 2350.0], [16., 2350.0], [17., 2350.0], [18., 2350.0],
+    [19., 2350.0], [20., 2350.0], [21., 2350.0], [22., 2350.0], [23., 2350.0], [24., 2350.0],
+    [25., 2350.0]]) * [1., 1000.]
+
+ct_alkmaar_2p3MW = np.array([
+    [ 1.0, 0.000], [ 2.0, 0.780], [ 3.0, 0.780], [ 4.0, 0.770], [ 5.0, 0.780], [ 6.0, 0.780],
+    [ 7.0, 0.780], [ 8.0, 0.770], [ 9.0, 0.770], [10.0, 0.770], [11.0, 0.770], [12.0, 0.610],
+    [13.0, 0.430], [14.0, 0.330], [15.0, 0.270], [16.0, 0.220], [17.0, 0.180], [18.0, 0.150],
+    [19.0, 0.130], [20.0, 0.110], [21.0, 0.100], [22.0, 0.080], [23.0, 0.070], [24.0, 0.070],
+    [25.0, 0.060]])
+
+class alkmaar_2p3MW(WindTurbine):
+    def __init__(self, method='linear'):
+        WindTurbine.__init__(self, name='alkmaar_2p3MW', diameter=82, hub_height=85,
+                             powerCtFunction=PowerCtTabular(pc_alkmaar_2p3MW[:, 0], 
+                                                            pc_alkmaar_2p3MW[:, 1], 'w',
+                                                            ct_alkmaar_2p3MW[:, 1], method=method))
+
+vestas_v90 = vestas_v90_2MW_mode0()
+print('done')
 ## EOF
 
