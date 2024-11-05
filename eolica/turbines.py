@@ -164,6 +164,6 @@ class alkmaar_2p3MW(WindTurbine):
                                                             ct_alkmaar_2p3MW[:, 1], method=method))
 
 vestas_v90 = vestas_v90_2MW_mode0()
-print('done')
+
 ## EOF
 

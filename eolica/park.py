@@ -32,9 +32,10 @@ class EolicaPark(GlobalWindAtlasSite):
             data = yaml.safe_load(file)
 
         for turbine in data['turbines']:
-            self.lats.append(turbine['latitude' ])
-            self.lons.append(turbine['longitude'])
-            self.alts.append(turbine['altitude' ])
+            self.lats  .append(turbine['location']['latitude' ])
+            self.lons  .append(turbine['location']['longitude'])
+            self.alts  .append(turbine['location']['altitude' ])
+            self.ttypes.append(turbine['type'])
             
             
         ## turbines = [
@@ -42,6 +43,5 @@ class EolicaPark(GlobalWindAtlasSite):
         ##     for t in data['wind_turbine_park']['turbines']
         ## ]
         ## park = EolicaPark(data['wind_turbine_park']['name'], turbines)
-        return data
 
 mysite = EolicaPark('parks/alkmaar.yaml') 
