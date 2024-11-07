@@ -69,6 +69,15 @@ class EolicaPark(GlobalWindAtlasSite):
         '''
         if self.config['site_type'] == 'GlobalWindAtlasSite':
             self.site = GlobalWindAtlasSite(self.mean_lat, self.mean_lon, np.mean(self.alts), self.config['roughness'])
+            
+            ## plot the wind speed and direction thingy
+            fig = plt.figure()
+
+            self.site.plot_ws_distribution().plot()
+            fig.savefig(self.results / f'{self.name}_ws.png')
+
+            self.site.plot_wd_distribution().plot()
+            fig.savefig(self.results / f'{self.name}_wd.png')
         else:
             print(f'[]--- eolica: you did not specify a proper site type!')
 

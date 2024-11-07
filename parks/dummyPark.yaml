@@ -1,5 +1,7 @@
 park_name: 'ParkyMcParkFace'
 site_type: 'GlobalWindAtlasSite'
+model_type: 'Bastankhah_PorteAgel_2014'
+model_parameters: {k: 0.0324555}
 roughness: 1.0 # roughness from here: https://www.wind-energy-the-facts.org/fundamentals.html
 turbines:
   - number: 1
