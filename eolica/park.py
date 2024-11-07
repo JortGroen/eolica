@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 import numpy as np
-import yaml, os
+import yaml, munch, os
 from pathlib import Path
 import matplotlib.pyplot as plt
 from py_wake.site.xrsite import GlobalWindAtlasSite
@@ -30,8 +30,9 @@ class EolicaPark(GlobalWindAtlasSite):
 
         with open(yamlfile, 'r') as file:
             self.config = yaml.safe_load(file)
+            self.config = munch.Munch(self.config)
 
-        self.name = self.config['park_name']
+        self.name = self.config.park_name
 
         ## make the results directory as well
         self.results = Path(os.getcwd()) / 'results' / self.name
@@ -44,7 +45,7 @@ class EolicaPark(GlobalWindAtlasSite):
         this function loads the turbines into a pywake windturbinelist
         '''
         
-        for turbine in self.config['turbines']:
+        for turbine in self.config.turbines:
             self.lats  .append(turbine['location']['latitude' ])
             self.lons  .append(turbine['location']['longitude'])
             self.alts  .append(turbine['location']['altitude' ])
@@ -67,8 +68,8 @@ class EolicaPark(GlobalWindAtlasSite):
         '''
         loads the site, according to the specs in the yaml
         '''
-        if self.config['site_type'] == 'GlobalWindAtlasSite':
-            self.site = GlobalWindAtlasSite(self.mean_lat, self.mean_lon, np.mean(self.alts), self.config['roughness'])
+        if self.config.site_type == 'GlobalWindAtlasSite':
+            self.site = GlobalWindAtlasSite(self.mean_lat, self.mean_lon, np.mean(self.alts), self.config.roughness)
             
             ## plot the wind speed and direction thingy
             fig = plt.figure()
