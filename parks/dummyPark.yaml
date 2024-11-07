@@ -1,6 +1,6 @@
 park_name: 'ParkyMcParkFace'
 site_type: 'GlobalWindAtlasSite'
-roughness: 1.0
+roughness: 1.0 # roughness from here: https://www.wind-energy-the-facts.org/fundamentals.html
 turbines:
   - number: 1
     type: 'alkmaar_2p3MW'
