@@ -11,6 +11,8 @@ import numpy as np
 ## enercon66_1p8MW
 ## alkmaar_2p3MW
 
+## when adding a new turbine, make sure to add it in the dictionary at the bottom
+
 
 pc_vestas_v90_2MW_mode0 = np.array(
 [[ 1.0,   0.], [ 1.5,   0.], [ 2.0,   0.], [ 2.5,   0.], [ 3.0,   0.], [ 3.5,   0.], 
@@ -163,7 +165,12 @@ class alkmaar_2p3MW(WindTurbine):
                                                             pc_alkmaar_2p3MW[:, 1], 'w',
                                                             ct_alkmaar_2p3MW[:, 1], method=method))
 
-vestas_v90 = vestas_v90_2MW_mode0()
-
+turbine_dict = {
+    'vestas_v90_2MW_mode0' : vestas_v90_2MW_mode0(),
+    'vestas_v136_3p45MW'   : vestas_v136_3p45MW()  ,
+    'vestas_v136_4p2MW'    : vestas_v136_4p2MW()   ,
+    'enercon66_1p8MW'      : enercon66_1p8MW()     ,
+    'alkmaar_2p3MW'        : alkmaar_2p3MW()       ,
+}
 ## EOF
 

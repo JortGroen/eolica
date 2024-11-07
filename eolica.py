@@ -5,7 +5,8 @@ import pandas
 def main():
     print('[]--- eolica: hi there!')
 
-    mypark = EolicaPark('parks/alkmaar.yaml')
+    park = EolicaPark('parks/dummyPark.yaml')
+    print(park)
 
 
     print('[]--- eolica: done!')
