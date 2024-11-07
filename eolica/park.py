@@ -21,6 +21,7 @@ class EolicaPark(GlobalWindAtlasSite):
 
         self.load_configuration(yamlfile)
         self.load_turbines()
+        self.load_site()
         
     def load_configuration(self, yamlfile):
         '''
@@ -54,6 +55,9 @@ class EolicaPark(GlobalWindAtlasSite):
                 print(f'[]--- ERROR: check the exact turbine type name in your yaml file!')
                 print(f'[]--- ERROR: you are trying to load a turbine with name {turbine["type"]} which is not supported.')
                 print(f'[]--- ERROR: available types are: {list(turbine_dict.keys())}')
+
+        self.mean_lat = np.mean(self.lats)
+        self.mean_lon = np.mean(self.lons)
             
         self.turbines = WindTurbines.from_WindTurbine_lst(self.tclass)
 
@@ -64,7 +68,7 @@ class EolicaPark(GlobalWindAtlasSite):
         loads the site, according to the specs in the yaml
         '''
         if self.config['site_type'] == 'GlobalWindAtlasSite':
-            self.site = GlobalWindAtlasSite(self.lats, self.lons, self.alts, self.config['roughness'])
+            self.site = GlobalWindAtlasSite(self.mean_lat, self.mean_lon, np.mean(self.alts), self.config['roughness'])
         else:
             print(f'[]--- eolica: you did not specify a proper site type!')
 
