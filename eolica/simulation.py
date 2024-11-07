@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 import py_wake
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
 
@@ -25,10 +26,28 @@ class EolicaSimulation():
 
         print(f'[]--- eolica: done making the simulation model {modelname}')
 
-    def specific_ws_wd(self, ws, wd):
+    def specific_ws_wd(self, ws=None, wd=None):
         '''
         simulate a model / park / whatever
         '''
         
-        sim_res = 0
+        sim_res = self.model(self.park.lats, self.park.lons, 
+                             h=self.park.alts,
+                             TI=self.park.config.model_parameters['TI'],
+                             type = range(len(self.park.tclass)),
+                             wd=wd,
+                             ws=ws)
+
+        if not ws and not wd:
+            ax1, ax2 = plt.subplots(1,2, figsize=(12,4))[1]
+            sim_res.Power.sel(wt=1).T.plot(ax=ax1)
+            ax1.set_xlabel('wd (deg)')
+            ax1.set_ylabel('ws (m/s)')
+            ax1.set_title('WT 35')
+            self.park.turbines.plot(self.park.lats,self.park.lons, ax=ax2)
+            ax2.plot(self.park.lats[1],self.park.lons[1],'or')
+            ax2.set_xlabel('x (m)')
+            plt.savefig(self.park.results / 'foobar.png', dpi=400)
+
+        return sim_res
         

@@ -1,5 +1,5 @@
 from eolica import EolicaPark, EolicaSimulation
-import pandas
+import matplotlib.pyplot as plt
 
 
 def main():
@@ -10,6 +10,9 @@ def main():
     print(park)
 
     simulation = EolicaSimulation(park)
+    res = simulation.specific_ws_wd()
+    res.Power.sel(wt=1).T.plot()
+    plt.show()
 
 
     print('[]--- eolica: done!')
