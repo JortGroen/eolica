@@ -1,6 +1,6 @@
 from .park import EolicaPark
-from .simulation import Simulation
+from .simulation import EolicaSimulation
 #from .config import ParkConfig, SimulationConfig
 from .turbines import *
 
-__all__ = ['EolicaPark', 'Simulation'] #, 'ParkConfig', 'SimulationConfig']
+__all__ = ['EolicaPark', 'EolicaSimulation'] #, 'ParkConfig', 'SimulationConfig']

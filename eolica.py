@@ -1,4 +1,4 @@
-from eolica import EolicaPark
+from eolica import EolicaPark, EolicaSimulation
 import pandas
 
 
@@ -8,6 +8,8 @@ def main():
     park = EolicaPark('parks/dummyPark.yaml')
     park.plot_turbines_powerCT()
     print(park)
+
+    simulation = EolicaSimulation(park)
 
 
     print('[]--- eolica: done!')

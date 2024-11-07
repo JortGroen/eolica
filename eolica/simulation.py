@@ -3,7 +3,7 @@ import numpy as np
 import py_wake
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
 
-class Simulation():
+class EolicaSimulation():
 
     def __init__(self, park, series=None):
         self.park = park
@@ -18,7 +18,6 @@ class Simulation():
         '''
         modelname = self.park.config.model_type
         if modelname == 'Bastankhah_PorteAgel_2014':
-
             self.model = Bastankhah_PorteAgel_2014(self.park.site, self.park.turbines, k=self.park.config.model_parameters['k'])
 
         else:
@@ -30,5 +29,6 @@ class Simulation():
         '''
         simulate a model / park / whatever
         '''
-        pass
+        
+        sim_res = 0
         
