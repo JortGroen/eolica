@@ -8,36 +8,41 @@ from py_wake.site.xrsite import GlobalWindAtlasSite
 from py_wake.wind_turbines import WindTurbine, WindTurbines
 from .turbines import turbine_dict
 
-
-#class EolicaTurbine:
-#    def __init__(self, number, type, latitude, longitude):
-#        self.number = number
-#        self.type = type
-#        self.latitude = latitude
-#        self.longitude = longitude
-#
-#    def __repr__(self):
-#        return f"EolicaTurbine(number={self.number}, type={self.type}, latitude={self.latitude}, longitude={self.longitude})"
-
 class EolicaPark(GlobalWindAtlasSite):
     '''
     this is a class to host the windpark object
     '''
 
     def __init__(self, yamlfile) -> None: 
-        self.config_fn = yamlfile
         self.config = None
-        self.lats, self.lons, self.alts, self.ttypes, self.tclass = [], [], [], [], []
         self.name = None
-        self.turbines = None
+        self.lats, self.lons, self.alts, self.ttypes, self.tclass = [], [], [], [], []
+        self.site, self.turbines = None, None
 
-        self.load_park()
+        self.load_configuration(yamlfile)
+        self.load_turbines()
         
-    def load_park(self):
-        with open(self.config_fn, 'r') as file:
+    def load_configuration(self, yamlfile):
+        '''
+        loads the yaml file into a data/config dictionary
+        '''
+
+        with open(yamlfile, 'r') as file:
             self.config = yaml.safe_load(file)
 
         self.name = self.config['park_name']
+
+        ## make the results directory as well
+        self.results = Path(os.getcwd()) / 'results' / self.name
+        self.results.mkdir(parents=True, exist_ok=True)
+
+        print(f'[]--- eolica: done loading the configuration')
+
+    def load_turbines(self):
+        '''
+        this function loads the turbines into a pywake windturbinelist
+        '''
+        
         for turbine in self.config['turbines']:
             self.lats  .append(turbine['location']['latitude' ])
             self.lons  .append(turbine['location']['longitude'])
@@ -52,10 +57,19 @@ class EolicaPark(GlobalWindAtlasSite):
             
         self.turbines = WindTurbines.from_WindTurbine_lst(self.tclass)
 
+        print(f'[]--- eolica: done loading the turbines')
 
-        ## make the results directory as well
-        self.results = Path(os.getcwd()) / 'results' / self.name
-        self.results.mkdir(parents=True, exist_ok=True)
+    def load_site(self):
+        '''
+        loads the site, according to the specs in the yaml
+        '''
+        if self.config['site_type'] == 'GlobalWindAtlasSite':
+            self.site = GlobalWindAtlasSite(self.lats, self.lons, self.alts, self.config['roughness'])
+        else:
+            print(f'[]--- eolica: you did not specify a proper site type!')
+
+
+        print(f'[]--- eolica: done loading the site')
 
     def plot_turbines_powerCT(self):
         '''

@@ -1,4 +1,6 @@
 park_name: 'ParkyMcParkFace'
+site_type: 'GlobalWindAtlasSite'
+roughness: 1.0
 turbines:
   - number: 1
     type: 'alkmaar_2p3MW'
