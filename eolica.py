@@ -6,6 +6,7 @@ def main():
     print('[]--- eolica: hi there!')
 
     park = EolicaPark('parks/dummyPark.yaml')
+    park.plot_turbines_powerCT()
     print(park)
 
 

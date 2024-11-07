@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 import pandas as pd
 import numpy as np
 import yaml, os
+from pathlib import Path
+import matplotlib.pyplot as plt
 from py_wake.site.xrsite import GlobalWindAtlasSite
 from py_wake.wind_turbines import WindTurbine, WindTurbines
 from .turbines import turbine_dict
@@ -23,7 +25,8 @@ class EolicaPark(GlobalWindAtlasSite):
     '''
 
     def __init__(self, yamlfile) -> None: 
-        self.config  = yamlfile
+        self.config_fn = yamlfile
+        self.config = None
         self.lats, self.lons, self.alts, self.ttypes, self.tclass = [], [], [], [], []
         self.name = None
         self.turbines = None
@@ -31,11 +34,11 @@ class EolicaPark(GlobalWindAtlasSite):
         self.load_park()
         
     def load_park(self):
-        with open(self.config, 'r') as file:
-            data = yaml.safe_load(file)
+        with open(self.config_fn, 'r') as file:
+            self.config = yaml.safe_load(file)
 
-        self.name = data['park_name']
-        for turbine in data['turbines']:
+        self.name = self.config['park_name']
+        for turbine in self.config['turbines']:
             self.lats  .append(turbine['location']['latitude' ])
             self.lons  .append(turbine['location']['longitude'])
             self.alts  .append(turbine['location']['altitude' ])
@@ -48,6 +51,37 @@ class EolicaPark(GlobalWindAtlasSite):
                 print(f'[]--- ERROR: available types are: {list(turbine_dict.keys())}')
             
         self.turbines = WindTurbines.from_WindTurbine_lst(self.tclass)
+
+
+        ## make the results directory as well
+        self.results = Path(os.getcwd()) / 'results' / self.name
+        self.results.mkdir(parents=True, exist_ok=True)
+
+    def plot_turbines_powerCT(self):
+        '''
+        this function plots the power-ct curves for each turbine type in the windpark into a 
+        turbines/ subdirectory in the results path of the park
+        '''
+        outdir = self.results / 'turbines'
+        outdir.mkdir(exist_ok=True)
+
+        tlist = list(set(self.tclass))
+        nrow = int(len(tlist)/2)+1
+        fig = plt.figure(figsize=(14,5*nrow))
+        for ti, t in enumerate(tlist):
+            myint = int(100*nrow + 20 + (ti+1))
+            fig.add_subplot(myint).set_ylim(0., 4.5e6)
+            t.plot_power_ct()
+        plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05, wspace=0.3, hspace=0.3)
+
+        fig.savefig(outdir / 'turbine_types.png', dpi=400)
+        fig.savefig(outdir / 'turbine_types.pdf', dpi=400)
+
+
+
+
+
+
 
     def __repr__(self):
         return f'''EolicaPark(name={self.name}, turbines={self.turbines}, \
