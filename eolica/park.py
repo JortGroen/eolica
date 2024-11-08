@@ -62,7 +62,9 @@ class EolicaPark(GlobalWindAtlasSite):
         self.mean_lon = np.mean(self.lons)
 
         self.latlons = [(i, j) for i,j in zip(self.lats, self.lons)]
-        self.xys     = utils.calculate_xy_distances(list(zip(self.lats, self.lons)),meters=True)
+        self.xys     = utils.calculate_xy_distances(list(zip(self.lats, self.lons)), meters=True)
+        self.xs = [i[0] for i in self.xys]
+        self.ys = [i[1] for i in self.xys]
             
         self.turbines = WindTurbines.from_WindTurbine_lst(self.tclass)
 
