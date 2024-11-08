@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from py_wake.site.xrsite import GlobalWindAtlasSite
 from py_wake.wind_turbines import WindTurbine, WindTurbines
 from .turbines import turbine_dict
+import utils
 
 class EolicaPark(GlobalWindAtlasSite):
     '''
@@ -59,6 +60,9 @@ class EolicaPark(GlobalWindAtlasSite):
 
         self.mean_lat = np.mean(self.lats)
         self.mean_lon = np.mean(self.lons)
+
+        self.latlons = [(i, j) for i,j in zip(self.lats, self.lons)]
+        self.xys     = utils.calculate_xy_distances(list(zip(self.lats, self.lons)),meters=True)
             
         self.turbines = WindTurbines.from_WindTurbine_lst(self.tclass)
 
