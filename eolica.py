@@ -11,8 +11,8 @@ def main():
 
     simulation = EolicaSimulation(park)
     res = simulation.specific_ws_wd()
-    res.Power.sel(wt=1).T.plot()
-    plt.show()
+    #res.Power.sel(wt=1).T.plot()
+    #plt.show()
 
 
     print('[]--- eolica: done!')

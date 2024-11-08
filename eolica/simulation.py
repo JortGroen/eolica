@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import py_wake
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
+from utils import AIT_COLORS
 
 class EolicaSimulation():
 
@@ -31,7 +32,7 @@ class EolicaSimulation():
         simulate a model / park / whatever
         '''
         
-        sim_res = self.model(self.park.lats, self.park.lons, 
+        sim_res = self.model(self.park.xs, self.park.ys, 
                              h=self.park.alts,
                              TI=self.park.config.model_parameters['TI'],
                              type = range(len(self.park.tclass)),
@@ -39,15 +40,30 @@ class EolicaSimulation():
                              ws=ws)
 
         if not ws and not wd:
-            ax1, ax2 = plt.subplots(1,2, figsize=(12,4))[1]
-            sim_res.Power.sel(wt=1).T.plot(ax=ax1)
-            ax1.set_xlabel('wd (deg)')
-            ax1.set_ylabel('ws (m/s)')
-            ax1.set_title('WT 35')
-            self.park.turbines.plot(self.park.lats,self.park.lons, ax=ax2)
-            ax2.plot(self.park.lats[1],self.park.lons[1],'or')
-            ax2.set_xlabel('x (m)')
-            plt.savefig(self.park.results / 'foobar.png', dpi=400)
+            _color = AIT_COLORS['bordeaux']
+            for it,t in enumerate(self.park.ttypes):
+                fig, axs = plt.subplots(2,2, figsize=(13,13))
+                sim_res.Power.sel(wt=it).T.plot(ax=axs[0, 0], cmap='PuBu_r')
+                axs[0, 0].set_xlabel('wd (deg)')
+                axs[0, 0].set_ylabel('ws (m/s)')
+                axs[0, 0].set_title(f'turbine {it}')
+
+                self.park.turbines.plot(self.park.xs, self.park.ys  , ax=axs[0, 1])
+                axs[0, 1].plot(self.park.xs[it],self.park.ys  [it], color=_color, marker='+')
+                axs[0, 1].set_xlabel('x (m)')
+                axs[0, 1].set_ylabel('y (m)')
+
+                self.park.turbines.plot(self.park.xs, self.park.alts, ax=axs[1, 0])
+                axs[1, 0].plot(self.park.xs[it],self.park.alts[it], color=_color, marker='+')
+                axs[1, 0].set_xlabel('x (m)')
+                axs[1, 0].set_ylabel('z (m)')
+
+                self.park.turbines.plot(self.park.ys, self.park.alts, ax=axs[1, 1])
+                axs[1, 1].plot(self.park.ys[it],self.park.alts[it], color=_color, marker='+')
+                axs[1, 1].set_xlabel('y (m)')
+                axs[1, 1].set_ylabel('z (m)')
+                fig.savefig(self.park.results / f'turbines/profile_windturbine_{it}.pdf', dpi=400)
+                fig.savefig(self.park.results / f'turbines/profile_windturbine_{it}.png', dpi=400)
 
         return sim_res
         
