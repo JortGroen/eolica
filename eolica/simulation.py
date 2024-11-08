@@ -49,19 +49,25 @@ class EolicaSimulation():
                 axs[0, 0].set_title(f'turbine {it}')
 
                 self.park.turbines.plot(self.park.xs, self.park.ys  , ax=axs[0, 1])
-                axs[0, 1].plot(self.park.xs[it],self.park.ys  [it], color=_color, marker='+')
+                axs[0, 1].plot(self.park.xs[it],self.park.ys  [it], color=_color, marker='*')
                 axs[0, 1].set_xlabel('x (m)')
+                axs[0, 1].set_xlim(min(self.park.xs)-200., max(self.park.xs)+200.)
                 axs[0, 1].set_ylabel('y (m)')
+                axs[0, 1].set_ylim(min(self.park.ys)-200., max(self.park.ys)+200.)
 
                 self.park.turbines.plot(self.park.xs, self.park.alts, ax=axs[1, 0])
-                axs[1, 0].plot(self.park.xs[it],self.park.alts[it], color=_color, marker='+')
+                axs[1, 0].plot(self.park.xs[it],self.park.alts[it], color=_color, marker='*')
                 axs[1, 0].set_xlabel('x (m)')
+                axs[1, 0].set_xlim(min(self.park.xs)-200., max(self.park.xs)+200.)
                 axs[1, 0].set_ylabel('z (m)')
+                axs[1, 0].set_ylim(0., 300.)
 
                 self.park.turbines.plot(self.park.ys, self.park.alts, ax=axs[1, 1])
-                axs[1, 1].plot(self.park.ys[it],self.park.alts[it], color=_color, marker='+')
+                axs[1, 1].plot(self.park.ys[it],self.park.alts[it], color=_color, marker='*')
                 axs[1, 1].set_xlabel('y (m)')
+                axs[1, 1].set_xlim(min(self.park.ys)-200., max(self.park.ys)+200.)
                 axs[1, 1].set_ylabel('z (m)')
+                axs[1, 1].set_ylim(0., 300.)
                 fig.savefig(self.park.results / f'turbines/profile_windturbine_{it}.pdf', dpi=400)
                 fig.savefig(self.park.results / f'turbines/profile_windturbine_{it}.png', dpi=400)
 
