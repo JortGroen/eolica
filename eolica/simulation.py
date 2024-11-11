@@ -43,6 +43,15 @@ class EolicaSimulation():
 
         print(f'[]--- eolica: done making the simulation model {modelname}')
 
+    def simulate_wind_timeseries(self):
+        sim_res = self.model(self.park.xs, self.park.ys,
+                             wd=ts_wd,
+                             ws=ts_ws,
+                             time=ts_time,
+                             type=range(len(self.park.tclass)),
+                             TI=0.3
+                             )
+
     def make_example_plots(self, ws=None, wd=None):
         '''
         this function makes some representative plots of the windpark
@@ -56,7 +65,6 @@ class EolicaSimulation():
         wdir = [0, 45, 90, 180, 270, 315]
         for _wsp, _wdir in itertools.product(wsp, wdir):
             self.specific_ws_wd(ws=_wsp, wd=_wdir)
-
 
     def specific_ws_wd(self, ws=None, wd=None):
         '''
