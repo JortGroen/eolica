@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import py_wake
-import itertools, yaml, munch, Path
+import itertools, yaml, munch, os
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
 from utils import AIT_COLORS
 
@@ -8,7 +8,7 @@ class EolicaSimulation():
 
     def __init__(self, park, config_fn, series=None):
         self.park   = park
-        self.config = self.load_configuration(config_fn)
+        self.load_configuration(config_fn)
         self.series = series
 
         self.model = None
@@ -18,6 +18,9 @@ class EolicaSimulation():
         '''
         loads the yaml file into a data/config dictionary
         '''
+        if not os.path.isfile(yamlfile):
+            print(f'[]---eolica: ERROR: simulation configuration file does not exist!!')
+            exit(1)
 
         with open(yamlfile, 'r') as file:
             config = yaml.safe_load(file)
