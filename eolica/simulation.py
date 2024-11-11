@@ -34,10 +34,15 @@ class EolicaSimulation():
         '''
         this function makes some representative plots of the windpark
         '''
-        wsp = [10]
+
+        ## make the unspecific plot first
+        self.specific_ws_wd()
+
+        ## make flow map plots for 10 m/s and 6 wind directions
+        wsp  = [10]
         wdir = [0, 45, 90, 180, 270, 315]
         for _wsp, _wdir in itertools.product(wsp, wdir):
-            if _wdir in (120, 270, 359) and _wsp != 10 : continue 
+            self.specific_ws_wd(ws=_wsp, wd=_wdir)
 
 
     def specific_ws_wd(self, ws=None, wd=None):
@@ -94,25 +99,18 @@ class EolicaSimulation():
                 ## axs[1, 1].set_ylabel('z (m)')
                 ## axs[1, 1].set_ylim(0., 300.)
         else:
-            #change the wind speed and wind direction to visualize different flow cases
-                sim_res_flow = wf_model(x-np.mean(x), 
-                                        y-np.mean(y), 
-                                        TI=0.3, 
-                                        wd=_wdir, 
-                                        ws=_wsp, 
-                                        type=[0,1,1,1])
+            ## these are now the specific directions and speeds
+            flow_map = sim_res.flow_map(grid=None, # defaults to HorizontalGrid(resolution=500, extend=0.2), see below
+                                        wd=wd,
+                                        ws=ws)
 
-                flow_map = sim_res_flow.flow_map(grid=None, # defaults to HorizontalGrid(resolution=500, extend=0.2), see below
-                                        wd=_wdir,
-                                        ws=_wsp)
-
-                fig_flow = plt.figure()
-                flow_map.plot_wake_map(cmap='BuPu_r')
-                plt.xlabel('x (m)')
-                plt.ylabel('y (m)')
-                plt.title('wake effects for'+ f' {_wdir} deg and {_wsp} m/s')
-                fig_flow.savefig(f'../results/alkmaar/flow_map_alkmaar_{_wdir}deg_{_wsp}ms.pdf', dpi=400)
-                fig_flow.savefig(f'../results/alkmaar/flow_map_alkmaar_{_wdir}deg_{_wsp}ms.png', dpi=400)
+            fig_flow = plt.figure()
+            flow_map.plot_wake_map(cmap='BuPu_r')
+            plt.xlabel('x (m)')
+            plt.ylabel('y (m)')
+            plt.title(f'wake effects for {wd} deg and {ws} m/s')
+            fig_flow.savefig(self.park.results / f'flow_map_{wd}deg_{ws}ms.pdf', dpi=400)
+            fig_flow.savefig(self.park.results / f'flow_map_{wd}deg_{ws}ms.png', dpi=400)
 
 
         return sim_res
