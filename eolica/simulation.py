@@ -109,9 +109,11 @@ class EolicaSimulation():
             plt.xlabel('x (m)')
             plt.ylabel('y (m)')
             plt.title(f'wake effects for {wd} deg and {ws} m/s')
-            fig_flow.savefig(self.park.results / f'flow_map_{wd}deg_{ws}ms.pdf', dpi=400)
-            fig_flow.savefig(self.park.results / f'flow_map_{wd}deg_{ws}ms.png', dpi=400)
-
+            
+            ## make the flow_maps directory and save the flow maps
+            (self.park.results / 'flow_maps').mkdir(exist_ok=True)
+            fig_flow.savefig(self.park.results / f'flow_maps/flow_map_{wd}deg_{ws}ms.pdf', dpi=400)
+            fig_flow.savefig(self.park.results / f'flow_maps/flow_map_{wd}deg_{ws}ms.png', dpi=400)
 
         return sim_res
         

@@ -10,7 +10,7 @@ def main():
     print(park)
 
     simulation = EolicaSimulation(park)
-    res = simulation.specific_ws_wd()
+    res = simulation.make_example_plots()
     #res.Power.sel(wt=1).T.plot()
     #plt.show()
 
