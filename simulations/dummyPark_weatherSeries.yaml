@@ -3,6 +3,6 @@ park_config: 'dummyPark.yaml'
 model_type: 'Bastankhah_PorteAgel_2014'
 model_parameters: {k: 0.0324555, TI: 0.0}
 input_data:
-  file: 'tawes_gaenserndorf_mistelbach_20230101T0000_20231231T0000.csv'
-  features: {'ws': 'ffam', 'wd': 'dd'}
+  file: 'input_data/tawes_gaenserndorf_mistelbach_20230101T0000_20231231T0000.csv'
+  features: {'time': 'time', 'ws': 'ffam', 'wd': 'dd'}
   selection: {'station': 134}

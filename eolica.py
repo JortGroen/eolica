@@ -7,10 +7,10 @@ def main():
 
     park = EolicaPark('parks/dummyPark.yaml')
     park.plot_turbines_powerCT()
-    print(park)
+    #print(park)
 
     simulation = EolicaSimulation(park, config_fn='simulations/dummyPark_weatherSeries.yaml')
-    res = simulation.make_example_plots()
+    #res = simulation.make_example_plots()
     #res.Power.sel(wt=1).T.plot()
     #plt.show()
 

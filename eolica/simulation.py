@@ -4,16 +4,19 @@ import py_wake
 import itertools, yaml, munch, os
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
 from utils import AIT_COLORS
+from .dataset import EolicaDataset
 
 class EolicaSimulation():
 
-    def __init__(self, park, config_fn, series=None):
+    def __init__(self, park, config_fn):
         self.park   = park
-        self.load_configuration(config_fn)
-        self.series = series
-
+        self.dataset = None
         self.model = None
+        self.dataset = None
+
+        self.load_configuration(config_fn)
         self.make_simulation_model()
+        self.load_dataset()
 
     def load_configuration(self, yamlfile):
         '''
@@ -44,7 +47,18 @@ class EolicaSimulation():
 
         print(f'[]--- eolica: done making the simulation model {modelname}')
 
+    def load_dataset(self):
+        '''
+        a function to load a pandas dataset into the simulation object
+        '''
+        
+        self.dataset = EolicaDataset(self.config)
+        print(f'[]--- eolica: done loading the simulation dataset')
+
     def simulate_wind_timeseries(self):
+        if not self.dataset:
+            self.load_dataset()
+
         sim_res = self.model(self.park.xs, self.park.ys,
                              wd=ts_wd,
                              ws=ts_ws,
