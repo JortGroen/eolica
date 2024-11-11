@@ -14,7 +14,7 @@ class EolicaDataset():
 
         infile = self.config.input_data.file
 
-        df = pd.read_csv(infile)
+        df = pd.read_csv(infile, parse_dates=[self.config.input_data.features.time])
 
         ## apply the selections from the yaml file
         for k,v in self.config.input_data.selection.items():
