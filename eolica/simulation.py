@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import py_wake
+import itertools
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
 from utils import AIT_COLORS
 
@@ -28,6 +29,16 @@ class EolicaSimulation():
             exit(1)
 
         print(f'[]--- eolica: done making the simulation model {modelname}')
+
+    def make_example_plots(self, ws=None, wd=None):
+        '''
+        this function makes some representative plots of the windpark
+        '''
+        wsp = [10]
+        wdir = [0, 45, 90, 180, 270, 315]
+        for _wsp, _wdir in itertools.product(wsp, wdir):
+            if _wdir in (120, 270, 359) and _wsp != 10 : continue 
+
 
     def specific_ws_wd(self, ws=None, wd=None):
         '''
@@ -84,23 +95,17 @@ class EolicaSimulation():
                 ## axs[1, 1].set_ylim(0., 300.)
         else:
             #change the wind speed and wind direction to visualize different flow cases
-            wsp = [5, 10, 25]
-            wdir = [24, 120, 207, 270, 359]
-            
-            import itertools
-            for _wsp, _wdir in itertools.product(wsp, wdir):
-                if _wdir in (120, 270, 359) and _wsp != 10 : continue 
                 sim_res_flow = wf_model(x-np.mean(x), 
                                         y-np.mean(y), 
                                         TI=0.3, 
                                         wd=_wdir, 
                                         ws=_wsp, 
                                         type=[0,1,1,1])
-            
+
                 flow_map = sim_res_flow.flow_map(grid=None, # defaults to HorizontalGrid(resolution=500, extend=0.2), see below
                                         wd=_wdir,
                                         ws=_wsp)
-            
+
                 fig_flow = plt.figure()
                 flow_map.plot_wake_map(cmap='BuPu_r')
                 plt.xlabel('x (m)')
