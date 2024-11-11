@@ -82,6 +82,33 @@ class EolicaSimulation():
                 ## axs[1, 1].set_xlim(min(self.park.ys)-200., max(self.park.ys)+200.)
                 ## axs[1, 1].set_ylabel('z (m)')
                 ## axs[1, 1].set_ylim(0., 300.)
+        else:
+            #change the wind speed and wind direction to visualize different flow cases
+            wsp = [5, 10, 25]
+            wdir = [24, 120, 207, 270, 359]
+            
+            import itertools
+            for _wsp, _wdir in itertools.product(wsp, wdir):
+                if _wdir in (120, 270, 359) and _wsp != 10 : continue 
+                sim_res_flow = wf_model(x-np.mean(x), 
+                                        y-np.mean(y), 
+                                        TI=0.3, 
+                                        wd=_wdir, 
+                                        ws=_wsp, 
+                                        type=[0,1,1,1])
+            
+                flow_map = sim_res_flow.flow_map(grid=None, # defaults to HorizontalGrid(resolution=500, extend=0.2), see below
+                                        wd=_wdir,
+                                        ws=_wsp)
+            
+                fig_flow = plt.figure()
+                flow_map.plot_wake_map(cmap='BuPu_r')
+                plt.xlabel('x (m)')
+                plt.ylabel('y (m)')
+                plt.title('wake effects for'+ f' {_wdir} deg and {_wsp} m/s')
+                fig_flow.savefig(f'../results/alkmaar/flow_map_alkmaar_{_wdir}deg_{_wsp}ms.pdf', dpi=400)
+                fig_flow.savefig(f'../results/alkmaar/flow_map_alkmaar_{_wdir}deg_{_wsp}ms.png', dpi=400)
+
 
         return sim_res
         
