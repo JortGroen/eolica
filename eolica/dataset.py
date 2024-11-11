@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+from datetime import datetime
 
 class EolicaDataset():
 
@@ -27,5 +29,14 @@ class EolicaDataset():
 
         ## now just select the features we need ...
         df = df[self.config.input_data.features.keys()]
+        if self.config.input_data.range:
+            start = pd.to_datetime(self.config.input_data.range.start).tz_localize('Europe/Vienna').tz_convert('UTC')
+            end   = pd.to_datetime(self.config.input_data.range.end  ).tz_localize('Europe/Vienna').tz_convert('UTC')
+            assert end > start, f'[]--- eolica: ERROR: start and end time are not correct start:{start} end: {end}'
+            df = df[(df['time'] >= start) & (df['time'] <= end)]
+
+        ## calculate x and y wind speeds for quiver plots
+        df['ws_u']  = df['ws'] * np.cos(np.deg2rad( (270. - df['wd']) % 360 )) #.values[start:end]
+        df['ws_v']  = df['ws'] * np.sin(np.deg2rad( (270. - df['wd']) % 360 )) #.values[start:end]
 
         self.df = df

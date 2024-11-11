@@ -11,6 +11,7 @@ def main():
 
     simulation = EolicaSimulation(park, config_fn='simulations/dummyPark_weatherSeries.yaml')
     #res = simulation.make_example_plots()
+    simulation.simulate_wind_timeseries()
     #res.Power.sel(wt=1).T.plot()
     #plt.show()
 

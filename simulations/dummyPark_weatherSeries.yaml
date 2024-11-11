@@ -1,8 +1,9 @@
 simulation_name: 'dummy_simulation'
-park_config: 'dummyPark.yaml'
+park_config: 'parks/dummyPark.yaml'
 model_type: 'Bastankhah_PorteAgel_2014'
 model_parameters: {k: 0.0324555, TI: 0.0}
 input_data:
   file: 'input_data/tawes_gaenserndorf_mistelbach_20230101T0000_20231231T0000.csv'
   features: {'time': 'time', 'ws': 'ffam', 'wd': 'dd'}
   selection: {'station': 134}
+  range: {'start': '2023-01-20 00:00', 'end': '2023-02-20 23:50'} ## if this is None, it will take the full range of the input file

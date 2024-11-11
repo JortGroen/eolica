@@ -3,7 +3,7 @@ import matplotlib.dates as mdates
 import py_wake
 import itertools, yaml, munch, os
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
-from utils import AIT_COLORS
+from utils import AIT_COLORS, many_colors, more_colors
 from .dataset import EolicaDataset
 
 class EolicaSimulation():
@@ -17,6 +17,9 @@ class EolicaSimulation():
         self.load_configuration(config_fn)
         self.make_simulation_model()
         self.load_dataset()
+
+        self.simulation_results = self.park.results / 'simulations' / self.config.simulation_name
+        self.simulation_results.mkdir(exist_ok=True, parents=True)
 
     def load_configuration(self, yamlfile):
         '''
@@ -68,15 +71,13 @@ class EolicaSimulation():
                              )
 
         fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
-        for it in range(len(x)):
-            turbine_name = wts._names[int(sim_res_prinzendorf.wt[it].type)]
-            turbine_name = turbine_name.replace('vestas','').replace('enercon','').replace('_mode0','').replace('_',' ').replace('p','.')
-            axes[0].plot(time_stamp_range, sim_res_prinzendorf.Power.sel(wt=it), color = utils.colors[it], linewidth=0.7, label=turbine_name)
+        for it,tn in enumerate(self.park.turbines._names):
+            axes[0].plot(self.dataset.df.time, sim_res.Power.sel(wt=it), color = more_colors[it], linewidth=0.7, label=tn)
         axes[0].legend(ncol=7, prop={'size': 8})
         axes[0].set_ylabel(f'P (W)')
         axes[0].set_ylim(0., 6e6)
-        axes[0].set_title(f'output power for range')
-        axes[1].quiver(time_stamp_range, ws_prinzendorf, ws_prinzendorf_u, ws_prinzendorf_v, pivot="middle", color='xkcd:violet blue', width=0.0008)
+        axes[0].set_title(f'output power for windpark {self.park.config.park_name}')
+        axes[1].quiver(self.dataset.df.time, self.dataset.df.ws, self.dataset.df.ws_u, self.dataset.df.ws_v, pivot="middle", width=0.0008, color='xkcd:steel blue')
         axes[1].set_title('wind direction and speed')
         axes[1].set_ylabel('wind speed (m/s)')
         _ = axes[1].set_xlabel('time')
@@ -90,10 +91,11 @@ class EolicaSimulation():
         #axes[0].xaxis.set_major_formatter(
         #    mdates.ConciseDateFormatter(axes[0].xaxis.get_major_locator()))
 
-        fig.savefig(f'../results/prinzendorf/allWindTurbines{fullYear}.pdf', dpi=400)
-        fig.savefig(f'../results/prinzendorf/allWindTurbines{fullYear}.png', dpi=400)
+        aep = sim_res.aep().sum()
 
-        aep = sim_res_prinzendorf.aep().sum()
+        fig.savefig(self.simulation_results / f'power_output_allTurbines.pdf', dpi=400)
+        fig.savefig(self.simulation_results / f'power_output_allTurbines.png', dpi=400)
+
 
         print(f'the total production of the chosen range is: {aep} GWh')
 
