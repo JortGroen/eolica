@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import py_wake
 import itertools, yaml, munch, os
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
@@ -24,7 +25,7 @@ class EolicaSimulation():
 
         with open(yamlfile, 'r') as file:
             config = yaml.safe_load(file)
-            self.config = munch.Munch(config)
+            self.config = munch.munchify(config)
 
         print(f'[]--- eolica: done loading the simulation configuration')
 
@@ -51,6 +52,36 @@ class EolicaSimulation():
                              type=range(len(self.park.tclass)),
                              TI=0.3
                              )
+
+        fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
+        for it in range(len(x)):
+            turbine_name = wts._names[int(sim_res_prinzendorf.wt[it].type)]
+            turbine_name = turbine_name.replace('vestas','').replace('enercon','').replace('_mode0','').replace('_',' ').replace('p','.')
+            axes[0].plot(time_stamp_range, sim_res_prinzendorf.Power.sel(wt=it), color = utils.colors[it], linewidth=0.7, label=turbine_name)
+        axes[0].legend(ncol=7, prop={'size': 8})
+        axes[0].set_ylabel(f'P (W)')
+        axes[0].set_ylim(0., 6e6)
+        axes[0].set_title(f'output power for range')
+        axes[1].quiver(time_stamp_range, ws_prinzendorf, ws_prinzendorf_u, ws_prinzendorf_v, pivot="middle", color='xkcd:violet blue', width=0.0008)
+        axes[1].set_title('wind direction and speed')
+        axes[1].set_ylabel('wind speed (m/s)')
+        _ = axes[1].set_xlabel('time')
+
+        #plt.locator_params(axis='x', nbins=10)
+
+        #myformat = mdates.DateFormatter('%Y-%m-%d')
+        #axes[0].xaxis.set_major_formatter(myformat)
+        axes[0].xaxis.set_major_locator(plt.MaxNLocator(6))
+        ## this looks nice but plots 1970 axes[0].xaxis.set_major_formatter(myformat)
+        #axes[0].xaxis.set_major_formatter(
+        #    mdates.ConciseDateFormatter(axes[0].xaxis.get_major_locator()))
+
+        fig.savefig(f'../results/prinzendorf/allWindTurbines{fullYear}.pdf', dpi=400)
+        fig.savefig(f'../results/prinzendorf/allWindTurbines{fullYear}.png', dpi=400)
+
+        aep = sim_res_prinzendorf.aep().sum()
+
+        print(f'the total production of the chosen range is: {aep} GWh')
 
     def make_example_plots(self, ws=None, wd=None):
         '''

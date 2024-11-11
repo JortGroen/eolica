@@ -31,7 +31,7 @@ class EolicaPark(GlobalWindAtlasSite):
 
         with open(yamlfile, 'r') as file:
             self.config = yaml.safe_load(file)
-            self.config = munch.Munch(self.config)
+            self.config = munch.munchify(self.config)
 
         self.name = self.config.park_name
 
@@ -47,15 +47,15 @@ class EolicaPark(GlobalWindAtlasSite):
         '''
         
         for turbine in self.config.turbines:
-            self.lats  .append(turbine['location']['latitude' ])
-            self.lons  .append(turbine['location']['longitude'])
-            self.alts  .append(turbine['location']['altitude' ])
-            self.ttypes.append(turbine['type'])
+            self.lats  .append(turbine.location.latitude )
+            self.lons  .append(turbine.location.longitude)
+            self.alts  .append(turbine.location.altitude )
+            self.ttypes.append(turbine.type)
             try:
-                self.tclass.append(turbine_dict[turbine['type']])
+                self.tclass.append(turbine_dict[turbine.type])
             except KeyError:
                 print(f'[]--- ERROR: check the exact turbine type name in your yaml file!')
-                print(f'[]--- ERROR: you are trying to load a turbine with name {turbine["type"]} which is not supported.')
+                print(f'[]--- ERROR: you are trying to load a turbine with name {turbine.type} which is not supported.')
                 print(f'[]--- ERROR: available types are: {list(turbine_dict.keys())}')
 
         self.mean_lat = np.mean(self.lats)
