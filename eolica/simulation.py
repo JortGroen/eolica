@@ -19,7 +19,7 @@ class EolicaSimulation():
         loads the yaml file into a data/config dictionary
         '''
         if not os.path.isfile(yamlfile):
-            print(f'[]---eolica: ERROR: simulation configuration file does not exist!!')
+            print(f'[]--- eolica: ERROR: simulation configuration file does not exist!!')
             exit(1)
 
         with open(yamlfile, 'r') as file:
