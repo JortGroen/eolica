@@ -2,3 +2,7 @@ simulation_name: 'dummyPark_weatherSeries'
 park_config: 'dummyPark.yaml'
 model_type: 'Bastankhah_PorteAgel_2014'
 model_parameters: {k: 0.0324555, TI: 0.0}
+input_data:
+  file: 'tawes_gaenserndorf_mistelbach_20230101T0000_20231231T0000.csv'
+  variables: {'ws': 'ffam', 'wd': 'dd'}
+  selection: {'station': 134}
