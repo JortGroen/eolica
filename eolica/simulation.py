@@ -23,7 +23,9 @@ class EolicaSimulation():
             self.model = Bastankhah_PorteAgel_2014(self.park.site, self.park.turbines, k=self.park.config.model_parameters['k'])
 
         else:
-            print(f'[]--- eolica: ERROR: you did not specify a good wind forecasting model!')
+            print(f'[]--- eolica: ERROR: you did not specify a proper wind forecasting model!')
+            print(f'[]--- eolica: options are: [Bastankhah_PorteAgel_2014,]')
+            exit(1)
 
         print(f'[]--- eolica: done making the simulation model {modelname}')
 
