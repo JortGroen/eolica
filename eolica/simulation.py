@@ -70,8 +70,18 @@ class EolicaSimulation():
                 axs[1, 1].set_xlim(min(self.park.ys)-200., max(self.park.ys)+200.)
                 axs[1, 1].set_ylabel('z (m)')
                 axs[1, 1].set_ylim(0., 300.)
+
+                ## save the figures
                 fig.savefig(self.park.results / f'turbines/profile_windturbine_{it}.pdf', dpi=400)
                 fig.savefig(self.park.results / f'turbines/profile_windturbine_{it}.png', dpi=400)
+
+                ## the following code doesn't work ... something inside py_wake
+                #self.park.turbines.plot_yz(self.park.ys, z=self.park.alts, ax=axs[1, 1])
+                #axs[1, 1].plot(self.park.ys[it],self.park.alts[it], color=_color, marker='*')
+                ## axs[1, 1].set_xlabel('y (m)')
+                ## axs[1, 1].set_xlim(min(self.park.ys)-200., max(self.park.ys)+200.)
+                ## axs[1, 1].set_ylabel('z (m)')
+                ## axs[1, 1].set_ylim(0., 300.)
 
         return sim_res
         
