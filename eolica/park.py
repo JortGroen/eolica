@@ -39,7 +39,7 @@ class EolicaPark(GlobalWindAtlasSite):
         self.results = Path(os.getcwd()) / 'results' / self.name
         self.results.mkdir(parents=True, exist_ok=True)
 
-        print(f'[]--- eolica: done loading the configuration')
+        print(f'[]--- eolica: done loading the park configuration')
 
     def load_turbines(self):
         '''

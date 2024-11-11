@@ -1,0 +1,4 @@
+simulation_name: 'dummyPark_weatherSeries'
+park_config: 'dummyPark.yaml'
+model_type: 'Bastankhah_PorteAgel_2014'
+model_parameters: {k: 0.0324555, TI: 0.0}

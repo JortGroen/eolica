@@ -1,27 +1,37 @@
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import py_wake
-import itertools
+import itertools, yaml, munch, Path
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
 from utils import AIT_COLORS
 
 class EolicaSimulation():
 
-    def __init__(self, park, series=None):
-        self.park = park
+    def __init__(self, park, config_fn, series=None):
+        self.park   = park
+        self.config = self.load_configuration(config_fn)
         self.series = series
 
         self.model = None
         self.make_simulation_model()
 
+    def load_configuration(self, yamlfile):
+        '''
+        loads the yaml file into a data/config dictionary
+        '''
+
+        with open(yamlfile, 'r') as file:
+            config = yaml.safe_load(file)
+            self.config = munch.Munch(config)
+
+        print(f'[]--- eolica: done loading the simulation configuration')
+
     def make_simulation_model(self):
         '''
         this makes the simulation model with the park and specs from the yaml
         '''
-        modelname = self.park.config.model_type
+        modelname = self.config.model_type
         if modelname == 'Bastankhah_PorteAgel_2014':
-            self.model = Bastankhah_PorteAgel_2014(self.park.site, self.park.turbines, k=self.park.config.model_parameters['k'])
+            self.model = Bastankhah_PorteAgel_2014(self.park.site, self.park.turbines, k=self.config.model_parameters['k'])
 
         else:
             print(f'[]--- eolica: ERROR: you did not specify a proper wind forecasting model!')
@@ -52,7 +62,7 @@ class EolicaSimulation():
         
         sim_res = self.model(self.park.xs, self.park.ys, 
                              h=self.park.alts,
-                             TI=self.park.config.model_parameters['TI'],
+                             TI=self.config.model_parameters['TI'],
                              type = range(len(self.park.tclass)),
                              wd=wd,
                              ws=ws)
