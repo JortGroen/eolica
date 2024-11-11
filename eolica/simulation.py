@@ -60,11 +60,11 @@ class EolicaSimulation():
             self.load_dataset()
 
         sim_res = self.model(self.park.xs, self.park.ys,
-                             wd=ts_wd,
-                             ws=ts_ws,
-                             time=ts_time,
+                             wd=self.dataset.df.wd,
+                             ws=self.dataset.df.ws,
+                             time=self.dataset.df.time,
                              type=range(len(self.park.tclass)),
-                             TI=0.3
+                             TI=self.config.model_parameters.TI
                              )
 
         fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
@@ -118,7 +118,7 @@ class EolicaSimulation():
         
         sim_res = self.model(self.park.xs, self.park.ys, 
                              h=self.park.alts,
-                             TI=self.config.model_parameters['TI'],
+                             TI=self.config.model_parameters.TI,
                              type = range(len(self.park.tclass)),
                              wd=wd,
                              ws=ws)
