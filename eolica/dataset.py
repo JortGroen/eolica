@@ -43,6 +43,8 @@ class EolicaDataset():
         ## now just select the features we need ...
         df = df[self.config.simulation.features.keys()]
         if self.config.simulation.range:
+            ## FIXME this might be an issue with the localization and the conversion to UTC! check!
+            print(f'[] --- eolica: selecting range of the timeseries from {self.config.simulation.range.start} to {self.config.simulation.range.end}')
             start = pd.to_datetime(self.config.simulation.range.start).tz_localize('Europe/Vienna').tz_convert('UTC')
             end   = pd.to_datetime(self.config.simulation.range.end  ).tz_localize('Europe/Vienna').tz_convert('UTC')
             assert end > start, f'[] --- eolica: ERROR: start and end time are not correct start:{start} end: {end}'
