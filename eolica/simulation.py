@@ -13,6 +13,7 @@ class EolicaSimulation():
         self.dataset = None
         self.model = None
         self.dataset = None
+        self.wt_productions = []
 
         self.load_configuration(config_fn)
         self.make_simulation_model()
@@ -72,13 +73,15 @@ class EolicaSimulation():
 
         fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
         for it,tn in enumerate(self.park.turbines._names):
-            axes[0].plot(self.dataset.df.time, sim_res.Power.sel(wt=it), color = more_colors[it], linewidth=0.7, label=tn)
+            axes[0].plot(self.dataset.df.time, sim_res.Power.sel(wt=it) /1e6, color = more_colors[it], linewidth=0.7, label=tn)
+            self.wt_productions.append(sim_res.Power.sel(wt=it).sum() * self.dataset.resolution / 6e7) ## this is now MWh
         axes[0].legend(ncol=7, prop={'size': 8})
-        axes[0].set_ylabel(f'P (W)')
-        axes[0].set_ylim(0., 6e6)
-        axes[0].set_title(f'output power for windpark {self.park.config.park_name}')
+        axes[0].set_ylabel(f'P (MW)')
+        axes[0].set_ylim(0., 6)
+        title1 = axes[0].set_title(f'output power for windpark {self.park.config.park_name}', loc='left')
+        axes[0].text(1.0, 1.05, f'total output: {sum(self.wt_productions) / 1e3:.3f} GWh', transform=axes[0].transAxes, ha='right', fontsize=title1.get_size())
         axes[1].quiver(self.dataset.df.time, self.dataset.df.ws, self.dataset.df.ws_u, self.dataset.df.ws_v, pivot="middle", width=0.0008, color='xkcd:steel blue')
-        axes[1].set_title('wind direction and speed')
+        axes[1].set_title('wind direction and speed', loc='left')
         axes[1].set_ylabel('wind speed (m/s)')
         _ = axes[1].set_xlabel('time')
 
@@ -93,11 +96,11 @@ class EolicaSimulation():
 
         aep = sim_res.aep().sum()
 
-        fig.savefig(self.simulation_results / f'power_output_allTurbines.pdf', dpi=400)
         fig.savefig(self.simulation_results / f'power_output_allTurbines.png', dpi=400)
+        fig.savefig(self.simulation_results / f'power_output_allTurbines.pdf', dpi=400)
 
 
-        print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {aep.values:.3f} GWh')
+        print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {sum(self.wt_productions):.3f} GWh')
 
     def make_example_plots(self, ws=None, wd=None):
         '''
