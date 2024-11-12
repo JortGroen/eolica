@@ -26,14 +26,14 @@ class EolicaSimulation():
         loads the yaml file into a data/config dictionary
         '''
         if not os.path.isfile(yamlfile):
-            print(f'[]--- eolica: ERROR: simulation configuration file does not exist!!')
+            print(f'[] --- eolica: ERROR: simulation configuration file does not exist!!')
             exit(1)
 
         with open(yamlfile, 'r') as file:
             config = yaml.safe_load(file)
             self.config = munch.munchify(config)
 
-        print(f'[]--- eolica: done loading the simulation configuration')
+        print(f'[] --- eolica: done loading the simulation configuration')
 
     def make_simulation_model(self):
         '''
@@ -44,11 +44,11 @@ class EolicaSimulation():
             self.model = Bastankhah_PorteAgel_2014(self.park.site, self.park.turbines, k=self.config.model_parameters['k'])
 
         else:
-            print(f'[]--- eolica: ERROR: you did not specify a proper wind forecasting model!')
-            print(f'[]--- eolica: options are: [Bastankhah_PorteAgel_2014,]')
+            print(f'[] --- eolica: ERROR: you did not specify a proper wind forecasting model!')
+            print(f'[] --- eolica: options are: [Bastankhah_PorteAgel_2014,]')
             exit(1)
 
-        print(f'[]--- eolica: done making the simulation model {modelname}')
+        print(f'[] --- eolica: done making the simulation model {modelname}')
 
     def load_dataset(self):
         '''
@@ -56,7 +56,7 @@ class EolicaSimulation():
         '''
         
         self.dataset = EolicaDataset(self.config)
-        print(f'[]--- eolica: done loading the simulation dataset')
+        print(f'[] --- eolica: done loading the simulation dataset')
 
     def simulate_wind_timeseries(self):
         if not self.dataset:
@@ -97,7 +97,7 @@ class EolicaSimulation():
         fig.savefig(self.simulation_results / f'power_output_allTurbines.png', dpi=400)
 
 
-        print(f'the total production of the chosen range is: {aep} GWh')
+        print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {aep.values} GWh')
 
     def make_example_plots(self, ws=None, wd=None):
         '''

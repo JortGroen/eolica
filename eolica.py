@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    print('[]--- eolica: hi there!')
+    print('[] --- eolica: hi there!')
 
     park = EolicaPark('parks/dummyPark.yaml')
     park.plot_turbines_powerCT()
@@ -16,7 +16,7 @@ def main():
     #plt.show()
 
 
-    print('[]--- eolica: done!')
+    print('[] --- eolica: done!')
 
     ##latlongs = [utils.get_xy_from_gps(52.592999, 4.752301) ,
     ##            utils.get_xy_from_gps(52.595889, 4.753783) ,

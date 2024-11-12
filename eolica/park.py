@@ -39,7 +39,7 @@ class EolicaPark(GlobalWindAtlasSite):
         self.results = Path(os.getcwd()) / 'results' / self.name
         self.results.mkdir(parents=True, exist_ok=True)
 
-        print(f'[]--- eolica: done loading the park configuration')
+        print(f'[] --- eolica: done loading the park configuration')
 
     def load_turbines(self):
         '''
@@ -54,9 +54,9 @@ class EolicaPark(GlobalWindAtlasSite):
             try:
                 self.tclass.append(turbine_dict[turbine.type])
             except KeyError:
-                print(f'[]--- ERROR: check the exact turbine type name in your yaml file!')
-                print(f'[]--- ERROR: you are trying to load a turbine with name {turbine.type} which is not supported.')
-                print(f'[]--- ERROR: available types are: {list(turbine_dict.keys())}')
+                print(f'[] --- ERROR: check the exact turbine type name in your yaml file!')
+                print(f'[] --- ERROR: you are trying to load a turbine with name {turbine.type} which is not supported.')
+                print(f'[] --- ERROR: available types are: {list(turbine_dict.keys())}')
 
         self.mean_lat = np.mean(self.lats)
         self.mean_lon = np.mean(self.lons)
@@ -68,7 +68,7 @@ class EolicaPark(GlobalWindAtlasSite):
             
         self.turbines = WindTurbines.from_WindTurbine_lst(self.tclass)
 
-        print(f'[]--- eolica: done loading the turbines')
+        print(f'[] --- eolica: done loading the turbines')
 
     def load_site(self):
         '''
@@ -86,10 +86,10 @@ class EolicaPark(GlobalWindAtlasSite):
             self.site.plot_wd_distribution().plot()
             fig.savefig(self.results / f'{self.name}_wd.png')
         else:
-            print(f'[]--- eolica: you did not specify a proper site type!')
+            print(f'[] --- eolica: you did not specify a proper site type!')
 
 
-        print(f'[]--- eolica: done loading the site')
+        print(f'[] --- eolica: done loading the site')
 
     def plot_turbines_powerCT(self):
         '''

@@ -27,8 +27,13 @@ class EolicaDataset():
         df = pd.read_csv(infile, parse_dates=[self.config.simulation.features.time])
 
         ## apply the selections from the yaml file
-        for k,v in self.config.simulation.selection.items():
-            df = df[df[k] == v]
+        try:
+            for k,v in self.config.simulation.selection.items():
+                df = df[df[k] == v]
+            print(f'[] --- eolica: selection applied!')
+        except AttributeError:
+            print('[] --- eolica: no selection chosen on the simulation input data.')
+
 
         ## rename the columns to have standard feature names
         ## just need to invert the dirctionary first
@@ -40,7 +45,7 @@ class EolicaDataset():
         if self.config.simulation.range:
             start = pd.to_datetime(self.config.simulation.range.start).tz_localize('Europe/Vienna').tz_convert('UTC')
             end   = pd.to_datetime(self.config.simulation.range.end  ).tz_localize('Europe/Vienna').tz_convert('UTC')
-            assert end > start, f'[]--- eolica: ERROR: start and end time are not correct start:{start} end: {end}'
+            assert end > start, f'[] --- eolica: ERROR: start and end time are not correct start:{start} end: {end}'
             df = df[(df['time'] >= start) & (df['time'] <= end)]
 
         ## calculate x and y wind speeds for quiver plots
