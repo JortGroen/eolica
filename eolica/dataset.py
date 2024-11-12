@@ -68,4 +68,4 @@ class EolicaDataset():
     def infer_resolution(self):
         diff_time = self.df['time'].diff()
         self.resolution = diff_time.min().total_seconds() / 60.
-        print(f'[] --- eolica: infered the time resolution to be {self.resolutoin} minutes')
+        print(f'[] --- eolica: infered the time resolution to be {self.resolution} minutes')
