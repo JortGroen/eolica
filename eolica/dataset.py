@@ -7,7 +7,10 @@ class EolicaDataset():
     def __init__(self, config):
         self.config = config
         self.df = None
+        self.resolution = None
         self.load_dataset()
+
+        
 
     def load_dataset(self):
         if self.config.simulation.type == 'wind_series':
@@ -55,3 +58,14 @@ class EolicaDataset():
         df['ws_v']  = df['ws'] * np.sin(np.deg2rad( (270. - df['wd']) % 360 )) #.values[start:end]
 
         self.df = df
+
+        ## make sure we know the time resolution in minutes
+        try:
+            self.resolution = self.config.simulation.resolution
+        except AttributeError:
+            self.infer_resolution()
+
+    def infer_resolution(self):
+        diff_time = self.df['time'].diff()
+        self.resolution = diff_time.min().total_seconds() / 60.
+        print(f'[] --- eolica: infered the time resolution to be {self.resolutoin} minutes')
