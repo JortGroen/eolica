@@ -97,7 +97,7 @@ class EolicaSimulation():
         fig.savefig(self.simulation_results / f'power_output_allTurbines.png', dpi=400)
 
 
-        print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {aep.values} GWh')
+        print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {aep.values:.3f} GWh')
 
     def make_example_plots(self, ws=None, wd=None):
         '''
