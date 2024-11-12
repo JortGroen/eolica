@@ -6,5 +6,5 @@ simulation:
   type: 'wind_series' ## options are 'wind_series', ...
   file: 'input_data/tawes_gaenserndorf_mistelbach_20230101T0000_20231231T0000.csv' ## required
   features: {'time': 'time', 'ws': 'ffam', 'wd': 'dd'} ## required
-  selection: None #{'station': 134} ## optional
+  selection: {'station': 134} ## optional. set to None otherwise
   range: {'start': '2023-01-20 00:00', 'end': '2023-02-20 23:50'} ## if this is None, it will take the full range of the input file
