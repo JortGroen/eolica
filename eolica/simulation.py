@@ -70,6 +70,7 @@ class EolicaSimulation():
                              type=range(len(self.park.tclass)),
                              TI=self.config.model_parameters.TI
                              )
+                             # Create a colormap that transitions from blue to red
 
         fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
         for it,tn in enumerate(self.park.turbines._names):
@@ -80,7 +81,11 @@ class EolicaSimulation():
         axes[0].set_ylim(0., 6)
         title1 = axes[0].set_title(f'output power for windpark {self.park.config.park_name}', loc='left')
         axes[0].text(1.0, 1.05, f'total output: {sum(self.wt_productions) / 1e3:.3f} GWh', transform=axes[0].transAxes, ha='right', fontsize=title1.get_size())
-        axes[1].quiver(self.dataset.df.time, self.dataset.df.ws, self.dataset.df.ws_u, self.dataset.df.ws_v, pivot="middle", width=0.0008, color='xkcd:steel blue')
+        norm = plt.Normalize(0., max(self.dataset.df.ws))
+        #cmapme = plt.cm.ScalarMappable(norm=norm, cmap='cividis')
+        axes[1].quiver(self.dataset.df.time     , self.dataset.df.ws, 
+                       self.dataset.df.ws_u_norm, self.dataset.df.ws_v_norm, 
+                       self.dataset.df.ws, pivot="middle", cmap='gist_earth', linewidth=1.00, scale=100,width=0.0012)
         axes[1].set_title('wind direction and speed', loc='left')
         axes[1].set_ylabel('wind speed (m/s)')
         _ = axes[1].set_xlabel('time')

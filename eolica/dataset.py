@@ -56,6 +56,8 @@ class EolicaDataset():
         ## calculate x and y wind speeds for quiver plots
         df['ws_u']  = df['ws'] * np.cos(np.deg2rad( (270. - df['wd']) % 360 )) #.values[start:end]
         df['ws_v']  = df['ws'] * np.sin(np.deg2rad( (270. - df['wd']) % 360 )) #.values[start:end]
+        df['ws_u_norm']  = df['ws_u'] / df['ws']
+        df['ws_v_norm']  = df['ws_v'] / df['ws']
 
         self.df = df
 
