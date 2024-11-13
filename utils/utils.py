@@ -1,18 +1,5 @@
 import math
-from geopy import distance
 import numpy as np
-
-def get_xy_from_gps(lat, long): ## this has to be in degrees N/S and degrees E/W
-    '''
-    helper function that translates from gps coordinates to xy coordinates
-
-    :param lat: latitude of the point
-    :param long: longitude of the point
-    '''
-
-    y = distance.distance( (lat, 0.) , (0. ,0.) ).meters
-    x = distance.distance( (0., long) , (0. ,0.) ).meters
-    return (x, y)
 
 def lat_lon_to_cartesian(lat, lon):
     # Convert latitude and longitude to radians
