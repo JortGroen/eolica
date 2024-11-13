@@ -8,6 +8,7 @@ simulation:
   features: {'time': 'time', 'ws': 'ffam', 'wd': 'dd'} ## required
   selection: {'station': 134} ## optional. set to None otherwise
   range: {'start': '2023-01-27 00:00', 'end': '2023-02-05 23:50'} ## if this is None, it will take the full range of the input file
+##
 ## the following is an option for something model-based
 ## simulation:
 ##   type: 'aibased'
@@ -16,3 +17,14 @@ simulation:
 ##   features: {'time': 'time', 'ws': 'ffam', 'wd': 'dd'} ## required
 ##   selection: {'station': 134} ## optional. set to None otherwise
 ##   range: {'start': '2023-01-27 00:00', 'end': '2023-02-05 23:50'} ## if this is None, it will take the full range of the input file
+##
+## the following is an option for something database-based (RDP?)
+## simulation:
+##   type: 'db-forecast'
+##   api-call: '???'
+##   file: 'input_data/tawes_gaenserndorf_mistelbach_20230101T0000_20231231T0000.csv' ## required
+##   features: {'time': 'time', 'ws': 'ffam', 'wd': 'dd'} ## translates db features to eolica features
+##   selection: {'station': 134} ## optional. set to None otherwise
+##   range: {'start': '2023-01-27 00:00', 'end': '2023-02-05 23:50'} ## if this is None, it will take the full range of the input file
+##
+##
