@@ -10,8 +10,6 @@ class EolicaDataset():
         self.resolution = None
         self.load_dataset()
 
-        
-
     def load_dataset(self):
         if self.config.simulation.type == 'wind_series':
             self.load_simple_series()
