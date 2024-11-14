@@ -117,6 +117,8 @@ class EolicaDataset():
 
         self.df = df
 
+## FIXME: maybe interpolate for simplicity? or rather just fill in the blanks?
+
         ## make sure we know the time resolution in minutes
         try:
             self.resolution = self.config.simulation.resolution
