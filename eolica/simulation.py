@@ -4,20 +4,16 @@ import py_wake
 import itertools, yaml, munch, os
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
 from utils import AIT_COLORS, many_colors, more_colors
-from .dataset import EolicaDataset
 
 class EolicaSimulation():
 
     def __init__(self, park, config_fn):
         self.park   = park
-        self.dataset = None
         self.model = None
-        self.dataset = None
         self.wt_productions = []
 
         self.load_configuration(config_fn)
         self.make_simulation_model()
-        self.load_dataset()
 
         self.simulation_results = self.park.results / 'simulations' / self.config.simulation_name
         self.simulation_results.mkdir(exist_ok=True, parents=True)
@@ -50,62 +46,6 @@ class EolicaSimulation():
             exit(1)
 
         print(f'[] --- eolica: done making the simulation model {modelname}')
-
-    def load_dataset(self):
-        '''
-        a function to load a pandas dataset into the simulation object
-        '''
-        
-        self.dataset = EolicaDataset(self.config)
-        print(f'[] --- eolica: done loading the simulation dataset')
-
-    def simulate_wind_timeseries(self):
-        if not self.dataset:
-            self.load_dataset()
-
-        sim_res = self.model(self.park.xs, self.park.ys,
-                             wd=self.dataset.df.wd,
-                             ws=self.dataset.df.ws,
-                             time=self.dataset.df.time,
-                             type=range(len(self.park.tclass)),
-                             TI=self.config.model_parameters.TI
-                             )
-                             # Create a colormap that transitions from blue to red
-
-        fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
-        for it,tn in enumerate(self.park.turbines._names):
-            axes[0].plot(self.dataset.df.time, sim_res.Power.sel(wt=it) /1e6, color = more_colors[it], linewidth=0.7, label=tn)
-            self.wt_productions.append(sim_res.Power.sel(wt=it).sum() * self.dataset.resolution / 6e7) ## this is now MWh
-        axes[0].legend(ncol=7, prop={'size': 8})
-        axes[0].set_ylabel(f'P (MW)')
-        axes[0].set_ylim(0., 6)
-        title1 = axes[0].set_title(f'output power for windpark {self.park.config.park_name}', loc='left')
-        axes[0].text(1.0, 1.05, f'total output: {sum(self.wt_productions) / 1e3:.3f} GWh', transform=axes[0].transAxes, ha='right', fontsize=title1.get_size())
-        norm = plt.Normalize(0., max(self.dataset.df.ws))
-        #cmapme = plt.cm.ScalarMappable(norm=norm, cmap='cividis')
-        axes[1].quiver(self.dataset.df.time     , self.dataset.df.ws, 
-                       self.dataset.df.ws_u_norm, self.dataset.df.ws_v_norm, 
-                       self.dataset.df.ws, pivot="middle", cmap='gist_earth', linewidth=1.00, scale=100,width=0.0012)
-        axes[1].set_title('wind direction and speed', loc='left')
-        axes[1].set_ylabel('wind speed (m/s)')
-        _ = axes[1].set_xlabel('time')
-
-        #plt.locator_params(axis='x', nbins=10)
-
-        #myformat = mdates.DateFormatter('%Y-%m-%d')
-        #axes[0].xaxis.set_major_formatter(myformat)
-        axes[0].xaxis.set_major_locator(plt.MaxNLocator(6))
-        ## this looks nice but plots 1970 axes[0].xaxis.set_major_formatter(myformat)
-        #axes[0].xaxis.set_major_formatter(
-        #    mdates.ConciseDateFormatter(axes[0].xaxis.get_major_locator()))
-
-        aep = sim_res.aep().sum()
-
-        fig.savefig(self.simulation_results / f'power_output_allTurbines.png', dpi=400)
-        fig.savefig(self.simulation_results / f'power_output_allTurbines.pdf', dpi=400)
-
-
-        print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {sum(self.wt_productions):.3f} GWh')
 
     def make_example_plots(self, ws=None, wd=None):
         '''
@@ -193,3 +133,51 @@ class EolicaSimulation():
 
         return sim_res
         
+    def simulate_wind_timeseries(self, dataset):
+        '''
+        this function takes a dataset and performs the simulation of the wind park
+        '''
+
+        sim_res = self.model(self.park.xs, self.park.ys,
+                             wd=dataset.df.wd,
+                             ws=dataset.df.ws,
+                             time=dataset.df.time,
+                             type=range(len(self.park.tclass)),
+                             TI=self.config.model_parameters.TI
+                             )
+                             # Create a colormap that transitions from blue to red
+
+        fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
+        for it,tn in enumerate(self.park.turbines._names):
+            axes[0].plot(dataset.df.time, sim_res.Power.sel(wt=it) /1e6, color = more_colors[it], linewidth=0.7, label=tn)
+            self.wt_productions.append(sim_res.Power.sel(wt=it).sum() * dataset.resolution / 6e7) ## this is now MWh
+        axes[0].legend(ncol=7, prop={'size': 8})
+        axes[0].set_ylabel(f'P (MW)')
+        axes[0].set_ylim(0., 6)
+        title1 = axes[0].set_title(f'output power for windpark {self.park.config.park_name}', loc='left')
+        axes[0].text(1.0, 1.05, f'total output: {sum(self.wt_productions) / 1e3:.3f} GWh', transform=axes[0].transAxes, ha='right', fontsize=title1.get_size())
+        norm = plt.Normalize(0., max(dataset.df.ws))
+        #cmapme = plt.cm.ScalarMappable(norm=norm, cmap='cividis')
+        axes[1].quiver(dataset.df.time     , dataset.df.ws, 
+                       dataset.df.ws_u_norm, dataset.df.ws_v_norm, 
+                       dataset.df.ws, pivot="middle", cmap='gist_earth', linewidth=1.00, scale=100,width=0.0012)
+        axes[1].set_title('wind direction and speed', loc='left')
+        axes[1].set_ylabel('wind speed (m/s)')
+        _ = axes[1].set_xlabel('time')
+
+        #plt.locator_params(axis='x', nbins=10)
+
+        #myformat = mdates.DateFormatter('%Y-%m-%d')
+        #axes[0].xaxis.set_major_formatter(myformat)
+        axes[0].xaxis.set_major_locator(plt.MaxNLocator(6))
+        ## this looks nice but plots 1970 axes[0].xaxis.set_major_formatter(myformat)
+        #axes[0].xaxis.set_major_formatter(
+        #    mdates.ConciseDateFormatter(axes[0].xaxis.get_major_locator()))
+
+        aep = sim_res.aep().sum()
+
+        fig.savefig(self.simulation_results / f'power_output_allTurbines.png', dpi=400)
+        fig.savefig(self.simulation_results / f'power_output_allTurbines.pdf', dpi=400)
+
+
+        print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {sum(self.wt_productions):.3f} GWh')

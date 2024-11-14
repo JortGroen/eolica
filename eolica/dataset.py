@@ -1,24 +1,30 @@
 import pandas as pd
 import numpy as np
+import os, yaml, munch, json
 from datetime import datetime
+from utils import load_yaml_config
 
 class EolicaDataset():
 
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, yamlfile):
+        self.config = load_yaml_config(yamlfile)
         self.df = None
         self.resolution = None
         self.load_dataset()
 
     def load_dataset(self):
-        if self.config.simulation.type == 'wind_series':
-            self.load_simple_series()
+        if   self.config.simulation.type == 'wind_series':
+            self.load_static_series()
+
+        elif self.config.simulation.type == 'redis_message':
+            self.load_redis_series()
+
         else:
             print(f'[] --- eolica: the type of simulation you chose is not supported! options are:')
-            print(f'[] --- eolica: [\'wind_series\', ... ]')
+            print(f'[] --- eolica: [\'wind_series\', \'redis_message\'... ]')
             exit(1)
 
-    def load_simple_series(self):
+    def load_static_series(self):
         '''
         this loads an arbitrary input csv into a somewhat standard dataset that we can use in the simulation
         '''
@@ -69,3 +75,50 @@ class EolicaDataset():
         diff_time = self.df['time'].diff()
         self.resolution = diff_time.min().total_seconds() / 60.
         print(f'[] --- eolica: infered the time resolution to be {self.resolution} minutes')
+
+    def load_redis_series(self):
+        '''
+        this loads an arbitrary input csv into a somewhat standard dataset that we can use in the simulation
+        '''
+
+        msg = self.config.simulation.message
+
+        selected_dict = {key: json.loads(msg.data[value]) for key,value in self.config.simulation.features.items()}
+
+        selected_dict['time'] = pd.to_datetime(selected_dict['time']) ## convert to datetime
+
+        #assert len(selected_dict['time']) == len(series_ws) == len(series_wd), f'[] --- eolica: ERROR lengths of series from redis are not the same'
+
+        df = pd.DataFrame(selected_dict)
+
+        ## apply the selections from the yaml file
+        try:
+            for k,v in self.config.simulation.selection.items():
+                df = df[df[k] == v]
+            print(f'[] --- eolica: selection applied!')
+        except AttributeError:
+            print('[] --- eolica: no selection chosen on the simulation input data.')
+
+        try:
+            ## FIXME this might be an issue with the localization and the conversion to UTC! check!
+            print(f'[] --- eolica: selecting range of the timeseries from {self.config.simulation.range.start} to {self.config.simulation.range.end}')
+            start = pd.to_datetime(self.config.simulation.range.start).tz_localize('Europe/Vienna').tz_convert('UTC')
+            end   = pd.to_datetime(self.config.simulation.range.end  ).tz_localize('Europe/Vienna').tz_convert('UTC')
+            assert end > start, f'[] --- eolica: ERROR: start and end time are not correct start:{start} end: {end}'
+            df = df[(df['time'] >= start) & (df['time'] <= end)]
+        except AttributeError:
+            print('[] --- eolica: no range selected')
+
+        ## calculate x and y wind speeds for quiver plots
+        df['ws_u']  = df['ws'] * np.cos(np.deg2rad( (270. - df['wd']) % 360 )) #.values[start:end]
+        df['ws_v']  = df['ws'] * np.sin(np.deg2rad( (270. - df['wd']) % 360 )) #.values[start:end]
+        df['ws_u_norm']  = df['ws_u'] / df['ws']
+        df['ws_v_norm']  = df['ws_v'] / df['ws']
+
+        self.df = df
+
+        ## make sure we know the time resolution in minutes
+        try:
+            self.resolution = self.config.simulation.resolution
+        except AttributeError:
+            self.infer_resolution()
