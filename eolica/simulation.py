@@ -11,6 +11,7 @@ class EolicaSimulation():
         self.park   = park
         self.model = None
         self.wt_productions = []
+        self.sim_result = None
 
         self.load_configuration(config_fn)
         self.make_simulation_model()
@@ -179,5 +180,13 @@ class EolicaSimulation():
         fig.savefig(self.simulation_results / f'power_output_allTurbines.png', dpi=400)
         fig.savefig(self.simulation_results / f'power_output_allTurbines.pdf', dpi=400)
 
+        
 
         print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {sum(self.wt_productions):.3f} GWh')
+
+    def convert_to_simulation_result(self, sim_res):
+        '''
+        function to convert a sim_res from py_wake to a dictionary that is readable by redis
+        
+        :param sim_res: simulation result from py_wake
+        '''
