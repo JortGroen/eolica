@@ -78,7 +78,8 @@ class EolicaDataset():
 
     def load_redis_series(self):
         '''
-        this loads an arbitrary input csv into a somewhat standard dataset that we can use in the simulation
+        this loads a message from the redis stream of the rdp data-crawler into the regular format.
+        it also homogenizes the tiem resolution (i'll try to do that generalized for all weatehr forecasts)
         '''
 
         msg = self.config.simulation.message
