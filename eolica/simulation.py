@@ -141,7 +141,7 @@ class EolicaSimulation():
         sim_res = self.model(self.park.xs, self.park.ys,
                              wd=dataset.df.wd,
                              ws=dataset.df.ws,
-                             time=dataset.df.time,
+                             time=dataset.df.index,
                              type=range(len(self.park.tclass)),
                              TI=self.config.model_parameters.TI
                              )
@@ -149,7 +149,7 @@ class EolicaSimulation():
 
         fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
         for it,tn in enumerate(self.park.turbines._names):
-            axes[0].plot(dataset.df.time, sim_res.Power.sel(wt=it) /1e6, color = more_colors[it], linewidth=0.7, label=tn)
+            axes[0].plot(dataset.df.index, sim_res.Power.sel(wt=it) /1e6, color = more_colors[it], linewidth=0.7, label=tn)
             self.wt_productions.append(sim_res.Power.sel(wt=it).sum() * dataset.resolution / 6e7) ## this is now MWh
         axes[0].legend(ncol=7, prop={'size': 8})
         axes[0].set_ylabel(f'P (MW)')
@@ -158,7 +158,7 @@ class EolicaSimulation():
         axes[0].text(1.0, 1.05, f'total output: {sum(self.wt_productions) / 1e3:.3f} GWh', transform=axes[0].transAxes, ha='right', fontsize=title1.get_size())
         norm = plt.Normalize(0., max(dataset.df.ws))
         #cmapme = plt.cm.ScalarMappable(norm=norm, cmap='cividis')
-        axes[1].quiver(dataset.df.time     , dataset.df.ws, 
+        axes[1].quiver(dataset.df.index    , dataset.df.ws, 
                        dataset.df.ws_u_norm, dataset.df.ws_v_norm, 
                        dataset.df.ws, pivot="middle", cmap='gist_earth', linewidth=1.00, scale=100,width=0.0012)
         axes[1].set_title('wind direction and speed', loc='left')
