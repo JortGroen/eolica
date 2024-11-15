@@ -24,6 +24,17 @@ class EolicaDataset():
             print(f'[] --- eolica: [\'wind_series\', \'redis_message\'... ]')
             exit(1)
 
+    def infer_resolution(self, df):
+        diff_time = df.index.diff()
+        resolutions = diff_time.unique().total_seconds()/60.
+        resolutions = resolutions[~np.isnan(resolutions)]
+        if len(resolutions) == 1:
+            print(f'[] --- eolica: infered the time resolution to be {resolutions[0]} minutes for the entire dataset')
+            return resolutions[0]
+        else:
+            print(f'[] --- eolica: found multiple time resolutions in the dataset: {resolutions}')
+            return resolutions
+
     def load_static_series(self):
         '''
         this loads an arbitrary input csv into a somewhat standard dataset that we can use in the simulation
@@ -49,6 +60,7 @@ class EolicaDataset():
 
         ## now just select the features we need ...
         df = df[self.config.simulation.features.keys()]
+        df.set_index('time', inplace=True)
         try:
             ## FIXME this might be an issue with the localization and the conversion to UTC! check!
             print(f'[] --- eolica: selecting range of the timeseries from {self.config.simulation.range.start} to {self.config.simulation.range.end}')
@@ -65,18 +77,13 @@ class EolicaDataset():
         df['ws_u_norm']  = df['ws_u'] / df['ws']
         df['ws_v_norm']  = df['ws_v'] / df['ws']
 
-        self.df = df
-
         ## make sure we know the time resolution in minutes
         try:
             self.resolution = self.config.simulation.resolution
         except AttributeError:
-            self.infer_resolution()
+            self.resolution = self.infer_resolution(df)
 
-    def infer_resolution(self):
-        diff_time = self.df['time'].diff()
-        self.resolution = diff_time.min().total_seconds() / 60.
-        print(f'[] --- eolica: infered the time resolution to be {self.resolution} minutes')
+        self.df = df
 
     def load_redis_series(self):
         '''
@@ -97,6 +104,7 @@ class EolicaDataset():
 
         ## make a dataframe out of the dict
         df = pd.DataFrame(selected_dict)
+        df.set_index('time', inplace=True)
 
         ## apply the selections from the yaml file
         try:
@@ -116,6 +124,17 @@ class EolicaDataset():
         except AttributeError:
             print('[] --- eolica: no range selected')
 
+        ## make sure we know the time resolution in minutes
+        try:
+            self.resolution = self.config.simulation.resolution
+        except AttributeError:
+            self.resolution = self.infer_resolution(df)
+        
+        if len(self.resolution) > 1:
+            #df = df.resample(pd.to_timedelta(self.resolution.min(), unit='m')).ffill()
+            df = df.resample(pd.to_timedelta(self.resolution.min(), unit='m')).interpolate(method='polynomial', order=3)
+            self.resolution = self.resolution.min()
+
         ## calculate x and y wind speeds for quiver plots
         df['ws_u']  = df['ws'] * np.cos(np.deg2rad( (270. - df['wd']) % 360 )) #.values[start:end]
         df['ws_v']  = df['ws'] * np.sin(np.deg2rad( (270. - df['wd']) % 360 )) #.values[start:end]
@@ -123,11 +142,3 @@ class EolicaDataset():
         df['ws_v_norm']  = df['ws_v'] / df['ws']
 
         self.df = df
-
-        ## FIXME: maybe interpolate for simplicity? or rather just fill in the blanks?
-
-        ## make sure we know the time resolution in minutes
-        try:
-            self.resolution = self.config.simulation.resolution
-        except AttributeError:
-            self.infer_resolution()
