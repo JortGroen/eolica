@@ -4,7 +4,7 @@ import py_wake
 import itertools, yaml, munch, os
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
 #from utils import AIT_COLORS, many_colors, more_colors
-from utils import utils
+from eolica import utils
 
 class EolicaSimulation():
 
@@ -151,7 +151,7 @@ class EolicaSimulation():
 
         fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
         for it,tn in enumerate(self.park.turbines._names):
-            axes[0].plot(dataset.df.index, sim_res.Power.sel(wt=it) /1e6, color = utils.more_colors[it], linewidth=0.7, label=tn)
+            axes[0].plot(dataset.df.index, sim_res.Power.sel(wt=it) /1e6, color = utils.utils.more_colors[it], linewidth=0.7, label=tn)
             self.wt_productions.append(sim_res.Power.sel(wt=it).sum() * dataset.resolution / 6e7) ## this is now MWh
         axes[0].legend(ncol=7, prop={'size': 8})
         axes[0].set_ylabel(f'P (MW)')
