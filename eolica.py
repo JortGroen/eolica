@@ -1,6 +1,5 @@
 from eolica import EolicaPark, EolicaSimulation, EolicaDataset
 import matplotlib.pyplot as plt
-from utils import *
 
 
 def main():
@@ -17,7 +16,7 @@ def main():
     simulation = EolicaSimulation(park, config_fn=config_sim)
     dataset    = EolicaDataset(config_sim)
     #res = simulation.make_example_plots()
-    simulation.simulate_wind_timeseries(dataset)
+    sim_res = simulation.simulate_wind_timeseries(dataset)
     #res.Power.sel(wt=1).T.plot()
     #plt.show()
 
