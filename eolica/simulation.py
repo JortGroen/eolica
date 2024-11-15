@@ -184,9 +184,20 @@ class EolicaSimulation():
 
         print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {sum(self.wt_productions):.3f} GWh')
 
-    def convert_to_simulation_result(self, sim_res):
+    def convert_to_simulation_result(self, sim_res, resolution):
         '''
         function to convert a sim_res from py_wake to a dictionary that is readable by redis
         
         :param sim_res: simulation result from py_wake
         '''
+
+        sim_res_dict = {}
+        sim_res_dict['forecast_time' ] = sim_res['Power']['time'].values
+        outputs = list(sim_res['Power'].values)
+        for it, o in enumerate(outputs):
+            sim_res_dict[f'turbine_output_{it}']       = o
+            sim_res_dict[f'turbine_effective_ws_{it}'] = sim_res.WS_eff[it].values
+        sim_res_dict['wd']   = sim_res.WD.values
+        sim_res_dict['ws']   = sim_res.WS.values
+        sim_res_dict['total_production'] = sim_res.Power.sum() * resolution / 6e7 ## in MWh. should probably check if that's correct
+            
