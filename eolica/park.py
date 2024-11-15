@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from py_wake.site.xrsite import GlobalWindAtlasSite
 from py_wake.wind_turbines import WindTurbine, WindTurbines
 from .turbines import turbine_dict
-import utils
+from utils import utils
 
 class EolicaPark(GlobalWindAtlasSite):
     '''

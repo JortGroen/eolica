@@ -4,7 +4,7 @@ import py_wake
 import itertools, yaml, munch, os
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
 #from utils import AIT_COLORS, many_colors, more_colors
-import utils
+from utils import utils
 
 class EolicaSimulation():
 

@@ -3,7 +3,7 @@ import numpy as np
 import os, yaml, munch, json
 from datetime import datetime
 #from utils import load_yaml_config
-import utils
+from utils import utils
 
 class EolicaDataset():
 
