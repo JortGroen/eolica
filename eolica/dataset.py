@@ -49,13 +49,15 @@ class EolicaDataset():
 
         ## now just select the features we need ...
         df = df[self.config.simulation.features.keys()]
-        if self.config.simulation.range:
+        try:
             ## FIXME this might be an issue with the localization and the conversion to UTC! check!
             print(f'[] --- eolica: selecting range of the timeseries from {self.config.simulation.range.start} to {self.config.simulation.range.end}')
             start = pd.to_datetime(self.config.simulation.range.start).tz_localize('Europe/Vienna').tz_convert('UTC')
             end   = pd.to_datetime(self.config.simulation.range.end  ).tz_localize('Europe/Vienna').tz_convert('UTC')
             assert end > start, f'[] --- eolica: ERROR: start and end time are not correct start:{start} end: {end}'
             df = df[(df['time'] >= start) & (df['time'] <= end)]
+        except AttributeError:
+            print('[] --- eolica: no range selected')
 
         ## calculate x and y wind speeds for quiver plots
         df['ws_u']  = df['ws'] * np.cos(np.deg2rad( (270. - df['wd']) % 360 )) #.values[start:end]
@@ -82,14 +84,18 @@ class EolicaDataset():
         it also homogenizes the tiem resolution (i'll try to do that generalized for all weatehr forecasts)
         '''
 
+        ## load the redis message
         msg = self.config.simulation.message
 
+        ## sub-select only the relevant information
         selected_dict = {key: json.loads(msg.data[value]) for key,value in self.config.simulation.features.items()}
 
+        ## make the time stamp a datetime object
         selected_dict['time'] = pd.to_datetime(selected_dict['time']) ## convert to datetime
 
         #assert len(selected_dict['time']) == len(series_ws) == len(series_wd), f'[] --- eolica: ERROR lengths of series from redis are not the same'
 
+        ## make a dataframe out of the dict
         df = pd.DataFrame(selected_dict)
 
         ## apply the selections from the yaml file
@@ -118,7 +124,7 @@ class EolicaDataset():
 
         self.df = df
 
-## FIXME: maybe interpolate for simplicity? or rather just fill in the blanks?
+        ## FIXME: maybe interpolate for simplicity? or rather just fill in the blanks?
 
         ## make sure we know the time resolution in minutes
         try:
