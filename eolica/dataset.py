@@ -30,10 +30,10 @@ class EolicaDataset():
         resolutions = resolutions[~np.isnan(resolutions)]
         if len(resolutions) == 1:
             print(f'[] --- eolica: infered the time resolution to be {resolutions[0]} minutes for the entire dataset')
-            return resolutions[0]
         else:
-            print(f'[] --- eolica: found multiple time resolutions in the dataset: {resolutions}')
-            return resolutions
+            print(f'[] --- eolica: found multiple time resolutions in the dataset: {resolutions.values}')
+
+        return resolutions
 
     def load_static_series(self):
         '''
@@ -82,7 +82,10 @@ class EolicaDataset():
             self.resolution = self.config.simulation.resolution
         except AttributeError:
             self.resolution = self.infer_resolution(df)
+            self.resolution = self.resolution.min()
+            df = df.resample(pd.to_timedelta(self.resolution, unit='m')).interpolate(method='polynomial', order=3)
 
+        ## now put the dataframe into the df member
         self.df = df
 
     def load_redis_series(self):
@@ -129,11 +132,8 @@ class EolicaDataset():
             self.resolution = self.config.simulation.resolution
         except AttributeError:
             self.resolution = self.infer_resolution(df)
-        
-        if len(self.resolution) > 1:
-            #df = df.resample(pd.to_timedelta(self.resolution.min(), unit='m')).ffill()
-            df = df.resample(pd.to_timedelta(self.resolution.min(), unit='m')).interpolate(method='polynomial', order=3)
             self.resolution = self.resolution.min()
+            df = df.resample(pd.to_timedelta(self.resolution, unit='m')).interpolate(method='polynomial', order=3)
 
         ## calculate x and y wind speeds for quiver plots
         df['ws_u']  = df['ws'] * np.cos(np.deg2rad( (270. - df['wd']) % 360 )) #.values[start:end]
