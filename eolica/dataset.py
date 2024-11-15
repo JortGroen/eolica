@@ -2,12 +2,13 @@ import pandas as pd
 import numpy as np
 import os, yaml, munch, json
 from datetime import datetime
-from utils import load_yaml_config
+#from utils import load_yaml_config
+import utils
 
 class EolicaDataset():
 
     def __init__(self, yamlfile):
-        self.config = load_yaml_config(yamlfile)
+        self.config = utils.load_yaml_config(yamlfile)
         self.df = None
         self.resolution = None
         self.load_dataset()
