@@ -180,9 +180,9 @@ class EolicaSimulation():
         fig.savefig(self.simulation_results / f'power_output_allTurbines.png', dpi=400)
         fig.savefig(self.simulation_results / f'power_output_allTurbines.pdf', dpi=400)
 
-        
-
         print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {sum(self.wt_productions):.3f} GWh')
+
+        return self.convert_to_simulation_result(sim_res, dataset.resolution)
 
     def convert_to_simulation_result(self, sim_res, resolution):
         '''
@@ -192,12 +192,14 @@ class EolicaSimulation():
         '''
 
         sim_res_dict = {}
-        sim_res_dict['forecast_time' ] = sim_res['Power']['time'].values
+        sim_res_dict['forecast_time' ] = sim_res['Power']['time'].values.astype('str')
         outputs = list(sim_res['Power'].values)
         for it, o in enumerate(outputs):
-            sim_res_dict[f'turbine_output_{it}']       = o
-            sim_res_dict[f'turbine_effective_ws_{it}'] = sim_res.WS_eff[it].values
-        sim_res_dict['wd']   = sim_res.WD.values
-        sim_res_dict['ws']   = sim_res.WS.values
-        sim_res_dict['total_production'] = sim_res.Power.sum() * resolution / 6e7 ## in MWh. should probably check if that's correct
+            sim_res_dict[f'turbine_output_{it}']       = list(o / 1e6) ## in MW
+            sim_res_dict[f'turbine_effective_ws_{it}'] = list(sim_res.WS_eff[it].values)
+        sim_res_dict['wd']   = list(sim_res.WD.values)
+        sim_res_dict['ws']   = list(sim_res.WS.values)
+        sim_res_dict['total_production'] = float(sim_res.Power.sum() * resolution / 6e7) ## in MWh. should probably check if that's correct
+
+        return sim_res_dict
             
