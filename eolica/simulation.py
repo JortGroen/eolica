@@ -194,12 +194,12 @@ class EolicaSimulation():
 
         sim_res_dict = {}
         sim_res_dict['forecast_time' ] = list(sim_res['Power']['time'].values.astype('str'))
-        outputs = list(sim_res['Power'].values)
+        outputs = list(sim_res['Power'].values.astype(float))
         for it, o in enumerate(outputs):
             sim_res_dict[f'turbine_output_{it}']       = list(o / 1e6) ## in MW
-            sim_res_dict[f'turbine_effective_ws_{it}'] = list(sim_res.WS_eff[it].values)
-        sim_res_dict['wd']   = list(sim_res.WD.values)
-        sim_res_dict['ws']   = list(sim_res.WS.values)
+            sim_res_dict[f'turbine_effective_ws_{it}'] = list(sim_res.WS_eff[it].values.astype(float))
+        sim_res_dict['wd']   = list(sim_res.WD.values.astype(float))
+        sim_res_dict['ws']   = list(sim_res.WS.values.astype(float))
         sim_res_dict['total_production'] = float(sim_res.Power.sum() * resolution / 6e7) ## in MWh. should probably check if that's correct
 
         return sim_res_dict
