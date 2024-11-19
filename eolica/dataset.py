@@ -97,7 +97,7 @@ class EolicaDataset():
         '''
 
         ## sub-select only the relevant information
-        selected_dict = {key: json.loads(message.data[value]) for key,value in self.config.simulation.features.items()}
+        selected_dict = {key: json.loads(message[value]) for key,value in self.config.simulation.features.items()}
 
         ## make the time stamp a datetime object
         selected_dict['time'] = pd.to_datetime(selected_dict['time']) ## convert to datetime
