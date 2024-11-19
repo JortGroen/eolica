@@ -7,8 +7,9 @@ from eolica import utils
 
 class EolicaDataset():
 
-    def __init__(self, yamlfile):
+    def __init__(self, yamlfile, message=None):
         self.config = utils.utils.load_yaml_config(yamlfile)
+        self.message = message
         self.df = None
         self.resolution = None
         self.load_dataset()
@@ -18,7 +19,7 @@ class EolicaDataset():
             self.load_static_series()
 
         elif self.config.simulation.type == 'redis_message':
-            self.load_redis_series()
+            self.load_redis_series(self.message)
 
         else:
             print(f'[] --- eolica: the type of simulation you chose is not supported! options are:')
@@ -89,17 +90,14 @@ class EolicaDataset():
         ## now put the dataframe into the df member
         self.df = df
 
-    def load_redis_series(self):
+    def load_redis_series(self, message):
         '''
         this loads a message from the redis stream of the rdp data-crawler into the regular format.
         it also homogenizes the tiem resolution (i'll try to do that generalized for all weatehr forecasts)
         '''
 
-        ## load the redis message
-        msg = self.config.simulation.message
-
         ## sub-select only the relevant information
-        selected_dict = {key: json.loads(msg.data[value]) for key,value in self.config.simulation.features.items()}
+        selected_dict = {key: json.loads(message.data[value]) for key,value in self.config.simulation.features.items()}
 
         ## make the time stamp a datetime object
         selected_dict['time'] = pd.to_datetime(selected_dict['time']) ## convert to datetime
