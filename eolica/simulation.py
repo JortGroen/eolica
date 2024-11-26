@@ -202,7 +202,7 @@ class EolicaSimulation():
             sim_res_dict[f'turbine_effective_ws_{it}'] = list(sim_res.WS_eff[it].values.astype(float))
         sim_res_dict['wd']   = list(sim_res.WD.values.astype(float))
         sim_res_dict['ws']   = list(sim_res.WS.values.astype(float))
-        sim_res_dict['total_production'] = float(sim_res.Power.sum() * resolution / 6e7) ## in MWh. should probably check if that's correct
+        sim_res_dict['total_production'] = [float(sim_res.Power.sum() * resolution / 6e7)] ## in MWh. should probably check if that's correct
 
         return sim_res_dict
             
