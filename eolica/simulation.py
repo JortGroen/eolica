@@ -193,7 +193,9 @@ class EolicaSimulation():
         '''
 
         sim_res_dict = {}
-        sim_res_dict['forecast_time' ] = list(sim_res['Power']['time'].values.astype('str'))
+        sim_res_dict['forecast_time'] = list(sim_res['Power']['time'].values.astype('str'))
+        sim_res_dict['forecast_time'] = [i.replace(' ', 'T') for i in sim_res_dict['forecast_time']]
+        
         outputs = list(sim_res['Power'].values.astype(float))
         for it, o in enumerate(outputs):
             sim_res_dict[f'turbine_output_{it}']       = list(o / 1e6) ## in MW
