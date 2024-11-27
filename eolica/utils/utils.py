@@ -1,6 +1,9 @@
 import math, os, munch, yaml
 import numpy as np
 
+class EolicaConfigError(Exception):
+    pass
+
 def lat_lon_to_cartesian(lat, lon):
     # Convert latitude and longitude to radians
     lat_rad = math.radians(lat)

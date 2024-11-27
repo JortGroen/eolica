@@ -2,29 +2,33 @@ import pandas as pd
 import numpy as np
 import os, yaml, munch, json
 from datetime import datetime
-#from utils import load_yaml_config
-from eolica import utils
+from eolica.utils.utils import load_yaml_config, EolicaConfigError
 
 class EolicaDataset():
 
     def __init__(self, yamlfile, message=None):
-        self.config = utils.utils.load_yaml_config(yamlfile)
+        self.config = load_yaml_config(yamlfile)
         self.message = message
         self.df = None
         self.resolution = None
         self.load_dataset()
 
     def load_dataset(self):
-        if   self.config.simulation.type == 'wind_series':
-            self.load_static_series()
+        try:
+            if   self.config.simulation.type == 'wind_series':
+                if self.message:
+                    raise EolicaConfigError(f'do not provide message with static simulation config!')
+                self.load_static_series()
 
-        elif self.config.simulation.type == 'redis_message':
-            self.load_redis_series(self.message)
+            elif self.config.simulation.type == 'redis_message':
+                self.load_redis_series(self.message)
 
-        else:
+        except EolicaConfigError as e:
+            print(f'[] --- eolica: ERROR {e}')
             print(f'[] --- eolica: the type of simulation you chose is not supported! options are:')
             print(f'[] --- eolica: [\'wind_series\', \'redis_message\'... ]')
-            exit(1)
+            print(f'[] --- eolica: exiting ...')
+            exit()
 
     def infer_resolution(self, df):
         diff_time = df.index.diff()
