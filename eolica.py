@@ -5,8 +5,10 @@ from eolica.utils import utils
 def main():
     print('[] --- eolica: hi there!')
 
-    park = EolicaPark('parks/dummyPark.yaml')
+    park = EolicaPark('parks/prinzendorf.yaml')
     park.plot_turbines_powerCT()
+    park.plot_windpark_map()
+    park.plot_windpark_map_satellite()
     #print(park)
 
     config_sim = 'simulations/dummyPark_weatherSeries.yaml'
@@ -18,7 +20,7 @@ def main():
     simulation = EolicaSimulation(park, config_fn=config_sim)
     dataset    = EolicaDataset(config_sim)#, message=msg)
 
-    #res = simulation.make_example_plots()
+    res = simulation.make_example_plots()
     sim_res = simulation.simulate_wind_timeseries(dataset)
     #res.Power.sel(wt=1).T.plot()
     #plt.show()

@@ -43,10 +43,12 @@ AIT_COLORS = {'bordeaux':'#79151d', # 2
               '50grau':'lightgray', 
               'schwarz':'#000c20'}
 
-many_colors = ['xkcd:dark blue', 'xkcd:maroon'      , 'xkcd:orange'       , 'xkcd:aqua'        ,
-               'xkcd:cyan'     , 'xkcd:sky blue'    , 'xkcd:lime'         , 'xkcd:hot pink'    ,
-               'xkcd:slate'    , 'xkcd:spring green', 'xkcd:light red'    , 'xkcd:light violet',
-               'xkcd:cream'    , 'xkcd:apple green' , 'xkcd:dark lavender', 'xkcd:terra cotta' ]
+many_colors = ['xkcd:dark blue' , 'xkcd:maroon'      , 'xkcd:orange'       , 'xkcd:aqua'        ,
+               'xkcd:royal blue', 'xkcd:sky blue'    , 'xkcd:lime'         , 'xkcd:hot pink'    ,
+               'xkcd:slate'     , 'xkcd:burgundy'    , 'xkcd:light violet' , 'xkcd:light red',
+               'xkcd:dark teal' , 'xkcd:apple green' , 'xkcd:dark lavender', 'xkcd:terra cotta' ,
+               'xkcd:blue green', 'xkcd:cerulean'    , 'xkcd:ochre'        , 'xkcd:steel'       ,
+               'xkcd:indigo'    , 'xkcd:lime'        , 'xkcd:gold'         , 'xkcd:slate']
 
 more_colors = ['xkcd:blue green', 'xkcd:cerulean', 'xkcd:coral', 'xkcd:steel',
                'xkcd:mauve'     , 'xkcd:orange'  , 'xkcd:pink' , 'xkcd:peach',
@@ -54,6 +56,12 @@ more_colors = ['xkcd:blue green', 'xkcd:cerulean', 'xkcd:coral', 'xkcd:steel',
                'xkcd:greenish'  , 'xkcd:grape'   , 'xkcd:sky'  , 'xkcd:clay' ,
                'xkcd:azure'     , 'xkcd:lemon'   , 'xkcd:shit' , 'xkcd:melon',
                'xkcd:ecru'      , 'xkcd:silver'  , 'xkcd:ocre' , 'xkcd:neon red' ]
+
+chatgpt_colors =['xkcd:bright blue',   'xkcd:vivid green',   'xkcd:bright red',    'xkcd:golden yellow', 
+                 'xkcd:soft purple',   'xkcd:aqua',          'xkcd:orange',        'xkcd:pinkish red',   
+                 'xkcd:light blue',    'xkcd:mint green',    'xkcd:violet',        'xkcd:sky blue',      
+                 'xkcd:lime green',    'xkcd:dark teal',     'xkcd:rose pink',     'xkcd:seafoam',       
+                 'xkcd:butter yellow',   'xkcd:coral',         'xkcd:orchid',        'xkcd:peach',  'xkcd:magenta'    ]
 
 def load_yaml_config(yamlfile):
     '''

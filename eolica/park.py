@@ -1,9 +1,13 @@
-from abc import ABC, abstractmethod
-import pandas as pd
 import numpy as np
-import yaml, munch, os
-from pathlib import Path
+import os
+import osmnx
+import io
+import folium
 import matplotlib.pyplot as plt
+
+from PIL import Image
+from abc import ABC, abstractmethod
+from pathlib import Path
 from py_wake.site.xrsite import GlobalWindAtlasSite
 from py_wake.wind_turbines import WindTurbine, WindTurbines
 from .turbines import turbine_dict
@@ -68,6 +72,8 @@ class EolicaPark(GlobalWindAtlasSite):
         self.xys     = utils.utils.calculate_xy_distances(list(zip(self.lats, self.lons)), meters=True)
         self.xs = [i[0] for i in self.xys]
         self.ys = [i[1] for i in self.xys]
+        self.sizex = max(self.xs)-min(self.xs)
+        self.sizey = max(self.ys)-min(self.ys)
             
         self.turbines = WindTurbines.from_WindTurbine_lst(self.tclass)
 
@@ -115,19 +121,65 @@ class EolicaPark(GlobalWindAtlasSite):
         fig.savefig(outdir / 'turbine_types.pdf', dpi=400)
 
 
+    def plot_windpark_map(self):
+        '''
+        downloads an OpenStreetMap area, places indicators on the map,
+        and saves it as a png file.
+        '''
 
+        size = max([self.sizex, self.sizey]) / 2. * 1.2
+        # download the map area
+        try:
+            graph = osmnx.graph_from_point((self.mean_lat, self.mean_lon), dist=size, network_type='all')#, simplify=True)
+        except Exception as e:
+            print(f'Error downloading OSM data: {e}')
+            return
 
+        # Convert graph to a geodataframe of nodes and edges
+        nodes, edges = osmnx.graph_to_gdfs(graph)
 
+        # Plot the map
+        fig, ax = plt.subplots(figsize=(10, 10))
+        edges.plot(ax=ax, linewidth =0.5, color='gray')
+        nodes.plot(ax=ax, markersize=0.5, color='blue')
 
+        # Add markers for GPS coordinates
+        for tn, lat, lon in zip(self.tnames, self.lats, self.lons):
+            ax.plot(lon, lat, marker='*', color='red', markersize=8, label=tn)
+
+        # Save the map to a file
+        plt.title(f'map of {self.name}')
+        #plt.legend(['objects'], loc='upper right')
+        plt.axis('off')
+        plt.savefig(self.results / f'{self.name}_map_simple.png', bbox_inches='tight', dpi=300)
+        #plt.show()
+
+    def plot_windpark_map_satellite(self):
+        '''
+        Downloads an OpenStreetMap area, places indicators on the map,
+        and saves it as a PNG file.
+        '''
+        # initialize the map
+        map_osm = folium.Map(location=[self.mean_lat, self.mean_lon], zoom_start=14)#width=self.sizex, height=self.sizey)
+        tile = folium.TileLayer(tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                                attr = 'Esri',
+                                name = 'Esri Satellite',
+                                overlay = False,
+                                control = True).add_to(map_osm)
+
+        # add markers for each GPS coordinate
+        for tn, lat, lon in zip(self.tnames, self.lats, self.lons):
+            myicon = folium.CustomIcon( 'eolica/utils/folium_icons/turbine_tall.png', icon_size=(66, 66))
+            folium.Marker(location=[lat, lon], popup=f'{tn}', icon=myicon).add_to(map_osm)
+
+        # save the map as an HTML file
+        outfile = self.results / f'{self.name}_map_satellite.html'
+        map_osm.save(outfile)
+
+        img_data = map_osm._to_png(2)
+        img = Image.open(io.BytesIO(img_data))
+        img.save(outfile.with_suffix('.png'))
 
     def __repr__(self):
         return f'''EolicaPark(name={self.name}, turbines={self.turbines}, \
                    lat={np.mean(self.lats)}, lon={np.mean(self.lons)}, alt={np.mean(self.alts)})'''
-            
-        ## turbines = [
-        ##     EolicaTurbine(t['number'], t['type'], t['location']['latitude'], t['location']['longitude'])
-        ##     for t in data['wind_turbine_park']['turbines']
-        ## ]
-        ## park = EolicaPark(data['wind_turbine_park']['name'], turbines)
-
-#mysite = EolicaPark('parks/alkmaar.yaml') 

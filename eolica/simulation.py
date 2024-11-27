@@ -76,7 +76,7 @@ class EolicaSimulation():
                              ws=ws)
 
         if not ws and not wd:
-            _color = utils.AIT_COLORS['bordeaux']
+            _color = utils.utils.AIT_COLORS['bordeaux']
             for it,t in enumerate(self.park.ttypes):
                 fig, axs = plt.subplots(2,2, figsize=(13,13))
                 sim_res.Power.sel(wt=it).T.plot(ax=axs[0, 0], cmap='PuBu_r')
@@ -151,7 +151,7 @@ class EolicaSimulation():
 
         fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
         for it,tn in enumerate(self.park.tnames):
-            axes[0].plot(dataset.df.index, sim_res.Power.sel(wt=it) /1e6, color = utils.utils.more_colors[it], linewidth=0.7, label=tn)
+            axes[0].plot(dataset.df.index, sim_res.Power.sel(wt=it) /1e6, color = utils.utils.many_colors[it], linewidth=0.7, label=tn)
             self.wt_productions.append(sim_res.Power.sel(wt=it).sum() * dataset.resolution / 6e7) ## this is now MWh
         axes[0].legend(ncol=7, prop={'size': 8})
         axes[0].set_ylabel(f'P (MW)')
