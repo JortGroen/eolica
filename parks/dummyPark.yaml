@@ -2,26 +2,29 @@ park_name: 'ParkyMcParkFace'
 site_type: 'GlobalWindAtlasSite'
 roughness: 1.0 # roughness from here: https://www.wind-energy-the-facts.org/fundamentals.html
 turbines:
-  - number: 1
-    type: 'alkmaar_2p3MW'
+  - type: 'vestas_v136_4p2MW'
+    name: 'Turbine 0'
     location:
       latitude: 52.592999
       longitude: 4.752301
       altitude: 10.
-  - number: 2
-    type: 'alkmaar_2p3MW'
+  - type: 'alkmaar_2p3MW'
+    name: 'Turbine 1'
+    location:
     location:
       latitude: 52.595889
       longitude: 4.753783
       altitude: 120.
-  - number: 3
-    type: 'vestas_v136_3p45MW'
+  - type: 'vestas_v136_3p45MW'
+    name: 'Turbine 2'
+    location:
     location:
       latitude: 52.602287
       longitude: 4.757099
       altitude: 10.
-  - number: 4
-    type: 'enercon66_1p8MW'
+  - type: 'enercon66_1p8MW'
+    name: 'Turbine 3'
+    location:
     location:
       latitude: 52.605192
       longitude: 4.758576
