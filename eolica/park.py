@@ -17,7 +17,8 @@ class EolicaPark(GlobalWindAtlasSite):
     def __init__(self, yamlfile) -> None: 
         self.config = None
         self.name = None
-        self.lats, self.lons, self.alts, self.ttypes, self.tclass = [], [], [], [], []
+        self.lats, self.lons, self.alts = [], [], []
+        self.ttypes, self.tclass, self.tnames = [], [], []
         self.site, self.turbines = None, None
 
         self.load_configuration(yamlfile)
@@ -29,9 +30,10 @@ class EolicaPark(GlobalWindAtlasSite):
         loads the yaml file into a data/config dictionary
         '''
 
-        with open(yamlfile, 'r') as file:
-            self.config = yaml.safe_load(file)
-            self.config = munch.munchify(self.config)
+        #with open(yamlfile, 'r') as file:
+        #    self.config = yaml.safe_load(file)
+        #    self.config = munch.munchify(self.config)
+        self.config = utils.utils.load_yaml_config(yamlfile)
 
         self.name = self.config.park_name
 
@@ -51,6 +53,7 @@ class EolicaPark(GlobalWindAtlasSite):
             self.lons  .append(turbine.location.longitude)
             self.alts  .append(turbine.location.altitude )
             self.ttypes.append(turbine.type)
+            self.tnames.append(turbine.name)
             try:
                 self.tclass.append(turbine_dict[turbine.type])
             except KeyError:

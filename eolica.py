@@ -9,14 +9,15 @@ def main():
     park.plot_turbines_powerCT()
     #print(park)
 
-    #config_sim = 'simulations/dummyPark_weatherSeries.yaml'
-    config_sim = 'simulations/dummyPark_redis.yaml'
+    config_sim = 'simulations/dummyPark_weatherSeries.yaml'
+    #config_sim = 'simulations/dummyPark_redis.yaml'
 
-    msg = utils.load_yaml_config(config_sim)
-    msg = msg.simulation.message.data
+    #msg = utils.load_yaml_config(config_sim)
+    #msg = msg.simulation.message.data
 
     simulation = EolicaSimulation(park, config_fn=config_sim)
-    dataset    = EolicaDataset(config_sim, message=msg)
+    dataset    = EolicaDataset(config_sim)#, message=msg)
+
     #res = simulation.make_example_plots()
     sim_res = simulation.simulate_wind_timeseries(dataset)
     #res.Power.sel(wt=1).T.plot()

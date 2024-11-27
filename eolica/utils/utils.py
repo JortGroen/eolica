@@ -58,14 +58,14 @@ def load_yaml_config(yamlfile):
     '''
     cfg = None
     if not os.path.isfile(yamlfile):
-        print(f'[] --- eolica: ERROR: simulation configuration file does not exist!!')
+        print(f'[] --- utils: ERROR: yaml configuration file does not exist!!')
         exit(1)
 
     with open(yamlfile, 'r') as file:
         config = yaml.safe_load(file)
         cfg = munch.munchify(config)
 
-    print(f'[] --- eolica: done loading the simulation configuration')
+    print(f'[] --- utils: done loading yaml file {yamlfile}')
     return cfg
 
 redis_msg_metno = {

@@ -69,7 +69,8 @@ class EolicaDataset():
             start = pd.to_datetime(self.config.simulation.range.start).tz_localize('Europe/Vienna').tz_convert('UTC')
             end   = pd.to_datetime(self.config.simulation.range.end  ).tz_localize('Europe/Vienna').tz_convert('UTC')
             assert end > start, f'[] --- eolica: ERROR: start and end time are not correct start:{start} end: {end}'
-            df = df[(df['time'] >= start) & (df['time'] <= end)]
+            # df = df[(df['time'] >= start) & (df['time'] <= end)]
+            df = df[(df.index >= start) & (df.index <= end)]
         except AttributeError:
             print('[] --- eolica: no range selected')
 
