@@ -148,7 +148,7 @@ class EolicaPark(GlobalWindAtlasSite):
             ax.plot(lon, lat, marker='*', color='red', markersize=8, label=tn)
 
         # Save the map to a file
-        plt.title(f'map of {self.name}')
+        plt.title(f'map of {self.name} windpark ({self.mean_lat:.4f}° N, {self.mean_lon:.4f}° E)')
         #plt.legend(['objects'], loc='upper right')
         plt.axis('off')
         plt.savefig(self.results / f'{self.name}_map_simple.png', bbox_inches='tight', dpi=300)
