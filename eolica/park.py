@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from py_wake.site.xrsite import GlobalWindAtlasSite
 from py_wake.wind_turbines import WindTurbine, WindTurbines
-from .turbines import turbine_dict
+from .turbines import turbine_dict, turbine_icons
 from eolica import utils
 
 class EolicaPark(GlobalWindAtlasSite):
@@ -168,8 +168,8 @@ class EolicaPark(GlobalWindAtlasSite):
                                 control = True).add_to(map_osm)
 
         # add markers for each GPS coordinate
-        for tn, lat, lon in zip(self.tnames, self.lats, self.lons):
-            myicon = folium.CustomIcon( 'eolica/utils/folium_icons/turbine_tall.png', icon_size=(66, 66))
+        for tn, tt, lat, lon in zip(self.tnames, self.ttypes, self.lats, self.lons):
+            myicon = folium.CustomIcon( f'eolica/utils/folium_icons/{turbine_icons[tt]}', icon_size=(66, 66))
             folium.Marker(location=[lat, lon], popup=f'{tn}', icon=myicon).add_to(map_osm)
 
         # save the map as an HTML file

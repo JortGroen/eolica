@@ -11,6 +11,12 @@ import numpy as np
 ## enercon66_1p8MW
 ## alkmaar_2p3MW
 
+## vestas_v90_2MW_mode0
+## vestas_v136_3p45MW 
+## vestas_v136_4p2MW
+## enercon66_1p8MW
+## alkmaar_2p3MW
+
 ## when adding a new turbine, make sure to add it in the dictionary at the bottom
 
 
@@ -171,6 +177,13 @@ turbine_dict = {
     'vestas_v136_4p2MW'    : vestas_v136_4p2MW()   ,
     'enercon66_1p8MW'      : enercon66_1p8MW()     ,
     'alkmaar_2p3MW'        : alkmaar_2p3MW()       ,
+}
+turbine_icons = {
+    'vestas_v90_2MW_mode0' : 'turbine_lightblue.png',
+    'vestas_v136_3p45MW'   : 'turbine_pinkish.png',
+    'vestas_v136_4p2MW'    : 'turbine_tall.png',
+    'enercon66_1p8MW'      : 'turbine_green.png',
+    'alkmaar_2p3MW'        : 'turbine_red.png',
 }
 ## EOF
 
