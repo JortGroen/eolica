@@ -4,6 +4,32 @@ import numpy as np
 class EolicaConfigError(Exception):
     pass
 
+def weibull_cdf_range(a, k, _min, _max):
+
+    # weibull cdf
+    cdf_min = 1. - np.exp(-(_min / a) ** k)
+    cdf_max = 1. - np.exp(-(_max / a) ** k)
+
+    # return the diff in cdfs
+    return cdf_min - cdf_max
+
+
+def weibull_strengths(a,k,lst):
+
+    retlist = []
+    slist = []
+    for i,v in enumerate(lst):
+        if not i: continue
+        retlist.append(weibull_cdf_range(a,k,v,lst[i-1]))
+        if not i == len(lst)-1:
+            slist.append(f'{int(lst[i-1])}-{int(v)}')
+        else:
+            slist.append(f'{int(lst[i-1])}+')
+
+    return retlist, slist
+
+
+
 def lat_lon_to_cartesian(lat, lon):
     # Convert latitude and longitude to radians
     lat_rad = math.radians(lat)

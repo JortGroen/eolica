@@ -100,8 +100,9 @@ class EolicaPark(GlobalWindAtlasSite):
             #self.site.plot_ws_distribution().plot()
             #fig.savefig(self.results / f'{self.name}_ws.png')
 
-            self.site.plot_wd_distribution().plot()
-            fig.savefig(self.results / f'{self.name}_wd.png')
+            # make that plot nicer as well
+            #self.site.plot_wd_distribution().plot()
+            #fig.savefig(self.results / f'{self.name}_wd.png')
         else:
             print(f'[] --- eolica: you did not specify a proper site type!')
 
@@ -134,6 +135,15 @@ class EolicaPark(GlobalWindAtlasSite):
         fig = px.bar_polar(df, r='frequency', theta='sectors',
                color='strength', template='plotly',
                color_discrete_sequence= px.colors.sequential.Plasma_r)
+
+        fig.update_layout(title=dict(text=f'windrose for park {self.name}',
+                                     font=dict(family='Arial',
+                                               size=20)))
+                          #showlegend=True,
+                          #legend=dict(title='legend',
+                          #            font=dict(family='Arial',
+                          #                      size=14)),
+
 
         try:
             fig.write_image(self.results / f'{self.name}_windrose.png')
