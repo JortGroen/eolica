@@ -1,9 +1,8 @@
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-import py_wake
+import numpy as np
+from py_wake.flow_map import HorizontalGrid
 import itertools, yaml, munch, os
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
-#from utils import AIT_COLORS, many_colors, more_colors
 from eolica import utils
 
 class EolicaSimulation():
@@ -69,7 +68,7 @@ class EolicaSimulation():
         '''
         
         sim_res = self.model(self.park.xs, self.park.ys, 
-                             h=self.park.alts,
+                             h=100., ## just make the wind plot at 100 meters ... that does exist
                              TI=self.config.model_parameters.TI,
                              type = range(len(self.park.tclass)),
                              wd=wd,
@@ -108,6 +107,7 @@ class EolicaSimulation():
                 ## save the figures
                 fig.savefig(self.park.results / f'turbines/profile_windturbine_{it}.pdf', dpi=400)
                 fig.savefig(self.park.results / f'turbines/profile_windturbine_{it}.png', dpi=400)
+                plt.close()
 
                 ## the following code doesn't work ... something inside py_wake
                 #self.park.turbines.plot_yz(self.park.ys, z=self.park.alts, ax=axs[1, 1])
@@ -118,7 +118,7 @@ class EolicaSimulation():
                 ## axs[1, 1].set_ylim(0., 300.)
         else:
             ## these are now the specific directions and speeds
-            flow_map = sim_res.flow_map(grid=None, # defaults to HorizontalGrid(resolution=500, extend=0.2), see below
+            flow_map = sim_res.flow_map(grid=None, #HorizontalGrid(self.park.xs, self.park.ys, 300), # defaults to HorizontalGrid(resolution=500, extend=0.2), see below
                                         wd=wd,
                                         ws=ws)
 
