@@ -1,10 +1,12 @@
 import numpy as np
+import pandas as pd
 import os
 import osmnx
 import io
 import folium
 import matplotlib.pyplot as plt
 
+import plotly.express as px
 from PIL import Image
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -67,6 +69,7 @@ class EolicaPark(GlobalWindAtlasSite):
 
         self.mean_lat = np.mean(self.lats)
         self.mean_lon = np.mean(self.lons)
+        self.alts = [i-np.min(self.alts) for i in self.alts]
 
         self.latlons = [(i, j) for i,j in zip(self.lats, self.lons)]
         self.xys     = utils.utils.calculate_xy_distances(list(zip(self.lats, self.lons)), meters=True)
@@ -84,13 +87,18 @@ class EolicaPark(GlobalWindAtlasSite):
         loads the site, according to the specs in the yaml
         '''
         if self.config.site_type == 'GlobalWindAtlasSite':
+            print(f'[] --- eolica: making site {self.name}')
             self.site = GlobalWindAtlasSite(self.mean_lat, self.mean_lon, np.mean(self.alts), self.config.roughness)
+        ## ## init the globalwindatlassite
+        ## super.__init__(self.xs, self.ys, np.mean(self.alts), self.config.roughness, ti=None)
+
             
             ## plot the wind speed and direction thingy
             fig = plt.figure()
 
-            self.site.plot_ws_distribution().plot()
-            fig.savefig(self.results / f'{self.name}_ws.png')
+            self.make_windrose_plot()
+            #self.site.plot_ws_distribution().plot()
+            #fig.savefig(self.results / f'{self.name}_ws.png')
 
             self.site.plot_wd_distribution().plot()
             fig.savefig(self.results / f'{self.name}_wd.png')
@@ -99,6 +107,40 @@ class EolicaPark(GlobalWindAtlasSite):
 
 
         print(f'[] --- eolica: done loading the site')
+
+    def make_windrose_plot(self):
+        '''
+        makes a nice plot of a windrose for the given weibull distribution
+        '''
+        # ranges for the legend of the plot
+        ranges = [0., 1., 2., 3., 4., 5., 6., 8., 10., 100.]
+
+        # nicer to have a separate object
+        ds = self.site.ds
+
+        # construct the df. calculate the weibull distribution and ranges in the cdf
+        data = []
+        for _i, sector in enumerate(ds['wd'].values[:12]):
+            freq = ds['Sector_frequency'].values[_i]
+            freqs, slist = utils.utils.weibull_strengths(ds['Weibull_A'].values[_i], ds['Weibull_k'].values[_i], ranges)
+            freqs = [i*freq for i in freqs]
+            for _j,s in enumerate(freqs):
+                data.append([sector, s*100., slist[_j]])
+
+        # make it into a df for easy plotting
+        df  = pd.DataFrame(data, columns=['sectors', 'frequency', 'strength'])
+
+        # the px windrose plot
+        fig = px.bar_polar(df, r='frequency', theta='sectors',
+               color='strength', template='plotly',
+               color_discrete_sequence= px.colors.sequential.Plasma_r)
+
+        try:
+            fig.write_image(self.results / f'{self.name}_windrose.png')
+            fig.write_image(self.results / f'{self.name}_windrose.pdf')
+            fig.write_image(self.results / f'{self.name}_windrose.html')
+        except Exception as e:
+            print(f'[] --- eolica: ERROR saving the windrose plot: {e}')
 
     def plot_turbines_powerCT(self):
         '''
@@ -163,7 +205,7 @@ class EolicaPark(GlobalWindAtlasSite):
         map_osm = folium.Map(location=[self.mean_lat, self.mean_lon], zoom_start=14)#width=self.sizex, height=self.sizey)
         tile = folium.TileLayer(tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
                                 attr = 'Esri',
-                                name = 'Esri Satellite',
+                                name = 'ESRI satellite imagery',
                                 overlay = False,
                                 control = True).add_to(map_osm)
 
@@ -171,6 +213,9 @@ class EolicaPark(GlobalWindAtlasSite):
         for tn, tt, lat, lon in zip(self.tnames, self.ttypes, self.lats, self.lons):
             myicon = folium.CustomIcon( f'eolica/utils/folium_icons/{turbine_icons[tt]}', icon_size=(66, 66))
             folium.Marker(location=[lat, lon], popup=f'{tn}', icon=myicon).add_to(map_osm)
+
+        # add a toggle of the layers
+        folium.LayerControl().add_to(map_osm)
 
         # save the map as an HTML file
         outfile = self.results / f'{self.name}_map_satellite.html'
