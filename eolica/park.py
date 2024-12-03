@@ -156,15 +156,15 @@ class EolicaPark(GlobalWindAtlasSite):
         # the px windrose plot
         fig = px.bar_polar(df, r='frequency', theta='sectors',
                color='strength', template='plotly',
-               color_discrete_sequence= px.colors.sequential.Plasma_r)
+               color_discrete_sequence=px.colors.sequential.Plasma_r)
 
         fig.update_layout(title=dict(text=f'windrose for park {self.name}',
                                      font=dict(family='Arial',
-                                               size=20)))
-                          #showlegend=True,
-                          #legend=dict(title='legend',
-                          #            font=dict(family='Arial',
-                          #                      size=14)),
+                                               size=20)),
+                          showlegend=True,
+                          legend=dict(title='windspeed (m/s)',
+                                      font=dict(family='Arial',
+                                                size=14)))
 
 
         try:
