@@ -6,9 +6,9 @@ def main():
     print('[] --- eolica: hi there!')
 
     park = EolicaPark('parks/prinzendorf.yaml')
-    park.plot_turbines_powerCT()
-    park.plot_windpark_map()
-    park.plot_windpark_map_satellite()
+    #park.plot_turbines_powerCT()
+    ## park.plot_windpark_map()
+    #park.plot_windpark_map_satellite()
     #print(park)
 
     config_sim = 'simulations/dummyPark_weatherSeries.yaml'
@@ -18,9 +18,10 @@ def main():
     #msg = msg.simulation.message.data
 
     simulation = EolicaSimulation(park, config_fn=config_sim)
+    #res = simulation.specific_ws_wd(ws=0, wd=10)
+    res = simulation.make_example_plots()
     dataset    = EolicaDataset(config_sim)#, message=msg)
 
-    res = simulation.make_example_plots()
     sim_res = simulation.simulate_wind_timeseries(dataset)
     #res.Power.sel(wt=1).T.plot()
     #plt.show()
