@@ -148,7 +148,7 @@ class EolicaPark(GlobalWindAtlasSite):
         try:
             fig.write_image(self.results / f'{self.name}_windrose.png')
             fig.write_image(self.results / f'{self.name}_windrose.pdf')
-            fig.write_image(self.results / f'{self.name}_windrose.html')
+            fig.write_html (self.results / f'{self.name}_windrose.html')
         except Exception as e:
             print(f'[] --- eolica: ERROR saving the windrose plot: {e}')
 
