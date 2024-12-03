@@ -4,6 +4,10 @@ import numpy as np
 class EolicaConfigError(Exception):
     pass
 
+def weibull(x, shape, scale):
+    # shape is k, scale is A
+    return (shape / scale) * (x / scale)**(shape - 1) * np.exp(-(x / scale)**shape)
+
 def weibull_cdf_range(a, k, _min, _max):
 
     # weibull cdf

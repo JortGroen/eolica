@@ -5,6 +5,7 @@ import osmnx
 import io
 import folium
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 import plotly.express as px
 from PIL import Image
@@ -92,22 +93,43 @@ class EolicaPark(GlobalWindAtlasSite):
         ## ## init the globalwindatlassite
         ## super.__init__(self.xs, self.ys, np.mean(self.alts), self.config.roughness, ti=None)
 
-            
-            ## plot the wind speed and direction thingy
-            fig = plt.figure()
-
+            # plot a few distributions for the site
+            self.make_weibull_dists()
             self.make_windrose_plot()
-            #self.site.plot_ws_distribution().plot()
-            #fig.savefig(self.results / f'{self.name}_ws.png')
-
-            # make that plot nicer as well
-            #self.site.plot_wd_distribution().plot()
-            #fig.savefig(self.results / f'{self.name}_wd.png')
         else:
             print(f'[] --- eolica: you did not specify a proper site type!')
 
 
         print(f'[] --- eolica: done loading the site')
+
+    def make_weibull_dists(self):
+        '''
+        makes the distributions of the weibull functions for each of the sectors
+        '''
+        # nicer to have a separate object
+        ds = self.site.ds
+        sectors = ds.wd.values[:12]
+        x = np.linspace(0, 15, 500)
+
+        colors = cm.tab20b(np.linspace(0, 1, len(sectors)))
+
+        fig = plt.figure(figsize=(10, 6))
+
+        for sector, color in zip(sectors, colors):
+            Weibull_A = ds.sel(wd=sector).Weibull_A.item()
+            Weibull_k = ds.sel(wd=sector).Weibull_k.item()
+            y = utils.utils.weibull(x, Weibull_k, Weibull_A)
+            y = y * ds.sel(wd=sector).Sector_frequency.item()
+            plt.plot(x, y, label=f"sector {int(sector)}°", color=color)
+
+        plt.xlabel('wind speed (m/s)')
+        plt.ylabel('probability (%)')
+        plt.title(f'Weibull distributions for windpark {self.name}', loc='left')
+        plt.legend()
+        plt.grid(True)
+
+        fig.savefig(self.results / f'{self.name}_weibull.png')
+        fig.savefig(self.results / f'{self.name}_weibull.pdf')
 
     def make_windrose_plot(self):
         '''
