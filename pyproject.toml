@@ -17,7 +17,7 @@ plotly = ">=5.22.0"
 py_wake = "2.6.7"
 PyYAML = "^6.0.0"
 munch = "^4.0.0"
-kaleido = "^0.2.0"
+kaleido = {version = "0.1.0.post1", platform = "win32"}
 
 [build-system]
 requires = ["poetry-core"]
