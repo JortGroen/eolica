@@ -119,7 +119,7 @@ class EolicaPark(GlobalWindAtlasSite):
             Weibull_A = ds.sel(wd=sector).Weibull_A.item()
             Weibull_k = ds.sel(wd=sector).Weibull_k.item()
             y = utils.utils.weibull(x, Weibull_k, Weibull_A)
-            y = y * ds.sel(wd=sector).Sector_frequency.item()
+            y = y *100. * ds.sel(wd=sector).Sector_frequency.item()
             plt.plot(x, y, label=f"sector {int(sector)}°", color=color)
 
         plt.xlabel('wind speed (m/s)')
