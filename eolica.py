@@ -6,10 +6,11 @@ def main():
     print('[] --- eolica: hi there!')
 
     park = EolicaPark('parks/prinzendorf.yaml')
-    #park.plot_turbines_powerCT()
-    ## park.plot_windpark_map()
-    #park.plot_windpark_map_satellite()
-    #print(park)
+    ## plots for the park:
+    ## weibull and windrose plots are made upon construction of the park
+    ## park.plot_turbines_powerCT()       ## turbine power-ct curves
+    ## park.plot_windpark_map()           ## schematic map of the windpark with streets
+    ## park.plot_windpark_map_satellite() ## OSM + satellite map of the park
 
     config_sim = 'simulations/dummyPark_weatherSeries.yaml'
     #config_sim = 'simulations/dummyPark_redis.yaml'
