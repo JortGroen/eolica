@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from py_wake.flow_map import HorizontalGrid
 import itertools, yaml, munch, os
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
@@ -183,7 +184,11 @@ class EolicaSimulation():
 
         print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {sum(self.wt_productions):.3f} GWh')
 
-        return self.convert_to_simulation_result(sim_res, dataset.resolution)
+        simulation_result = self.convert_to_simulation_result(sim_res, dataset.resolution)
+
+        self.save_csv(simulation_result)
+
+        return simulation_result
 
     def convert_to_simulation_result(self, sim_res, resolution):
         '''
@@ -205,4 +210,14 @@ class EolicaSimulation():
         sim_res_dict['total_production'] = [float(sim_res.Power.sum() * resolution / 6e7)] ## in MWh. should probably check if that's correct
 
         return sim_res_dict
+
+    def save_csv(self, simulation_result):
+
+        #del simulation_result['total_production']
+        simulation_result.pop('total_production')
+        output_df = pd.DataFrame(simulation_result)
+
+        print(f'[] --- eolica: saving the simulation as a csv file!')
+        output_df.to_csv(self.simulation_results / f'power_output_allTurbines.csv')
+
             
