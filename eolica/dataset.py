@@ -72,6 +72,7 @@ class EolicaDataset():
         df = self.convert_uv_to_wswd(df)
 
         ## set the time index
+        df['time'] = df['time'].dt.tz_localize('UTC')
         df.set_index('time', inplace=True)
         try:
             ## FIXME this might be an issue with the localization and the conversion to UTC! check!
