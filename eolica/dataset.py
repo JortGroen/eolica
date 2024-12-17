@@ -66,6 +66,12 @@ class EolicaDataset():
 
         ## now just select the features we need ...
         df = df[self.config.simulation.features.keys()]
+
+
+        ## convert u and v to wd and ws if it isn't already the case
+        df = self.convert_uv_to_wswd(df)
+
+        ## set the time index
         df.set_index('time', inplace=True)
         try:
             ## FIXME this might be an issue with the localization and the conversion to UTC! check!
@@ -94,6 +100,24 @@ class EolicaDataset():
 
         ## now put the dataframe into the df member
         self.df = df
+
+    def convert_uv_to_wswd(self, df):
+        '''
+        helper function that converts u and v components of the wind into ws and wd which is used in pywake
+        '''
+
+        if   all([i in df.columns for i in ['ws', 'wd']]):
+            print('[] --- eolica: found "ws" and "wd" in the dataframe!')
+        elif all([i in df.columns for i in ['wu', 'wv']]):
+            print('[] --- eolica: found "wu" and "wv" in the dataframe, converting to "ws" and "wd"')
+            df['ws'] = np.sqrt(df['wu']**2 + df['wv']**2)
+            df['wd'] = (270. - np.arctan2(df['wv'], df['wu']) * 180 / np.pi) % 360
+        else:
+            print('[] --- eolica: ERROR!!! there is neither ("wd", "ws"), nor ("wu", "wv") in the dataset!')
+            print('[] --- eolica: ERROR!!! exiting')
+            exit()
+
+        return df
 
     def load_redis_series(self, message):
         '''
