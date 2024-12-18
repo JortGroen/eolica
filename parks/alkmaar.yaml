@@ -1,0 +1,31 @@
+park_name: 'WindparkAlkmaar'
+site_type: 'GlobalWindAtlasSite'
+roughness: 1.0
+turbines:
+  - type: 'alkmaar_2p3MW'
+    name: 'Turbine 0'
+    location:
+      latitude: 52.592999
+      longitude: 4.752301
+      altitude: 10.
+  - type: 'alkmaar_2p3MW'
+    name: 'Turbine 1'
+    location:
+    location:
+      latitude: 52.595889
+      longitude: 4.753783
+      altitude: 120.
+  - type: 'alkmaar_2p3MW'
+    name: 'Turbine 2'
+    location:
+    location:
+      latitude: 52.602287
+      longitude: 4.757099
+      altitude: 10.
+  - type: 'alkmaar_2p3MW'
+    name: 'Turbine 3'
+    location:
+    location:
+      latitude: 52.605192
+      longitude: 4.758576
+      altitude: 24.
