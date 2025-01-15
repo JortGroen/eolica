@@ -1,5 +1,5 @@
 simulation_name: 'dummy_simulation'
-park_config: 'parks/dummyPark.yaml'
+park_config: 'parks/alkmaar.yaml'
 model_type: 'Bastankhah_PorteAgel_2014'
 model_parameters: {k: 0.0324555, TI: 0.0}
 simulation:

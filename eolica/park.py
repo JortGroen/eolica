@@ -6,12 +6,15 @@ import io
 import folium
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import xarray as xr
 
 import plotly.express as px
 from PIL import Image
 from abc import ABC, abstractmethod
 from pathlib import Path
 from py_wake.site.xrsite import GlobalWindAtlasSite
+from py_wake.site import XRSite
+from py_wake.site.shear import PowerShear
 from py_wake.wind_turbines import WindTurbine, WindTurbines
 from .turbines import turbine_dict, turbine_icons
 from eolica import utils
@@ -89,13 +92,27 @@ class EolicaPark(GlobalWindAtlasSite):
         '''
         if self.config.site_type == 'GlobalWindAtlasSite':
             print(f'[] --- eolica: making site {self.name}')
-            self.site = GlobalWindAtlasSite(self.mean_lat, self.mean_lon, np.mean(self.alts), self.config.roughness)
-        ## ## init the globalwindatlassite
-        ## super.__init__(self.xs, self.ys, np.mean(self.alts), self.config.roughness, ti=None)
+            try:
+                self.site = GlobalWindAtlasSite(self.mean_lat, self.mean_lon, np.mean(self.alts), self.config.roughness)
+                ## ## init the globalwindatlassite
+                ## super.__init__(self.xs, self.ys, np.mean(self.alts), self.config.roughness, ti=None)
 
-            # plot a few distributions for the site
-            self.make_weibull_dists()
-            self.make_windrose_plot()
+                # plot a few distributions for the site
+                self.make_weibull_dists()
+                self.make_windrose_plot()
+            except Exception as e:
+                #wd = np.linspace(0, 360, len(f), endpoint=False)
+                #self.site = XRSite(ds=xr.Dataset(data_vars={'WS': 10, 'P': ('wd', f), 'TI': ti}, coords={'wd': wd}), shear=PowerShear(h_ref=100, alpha=.2))
+                print(f'[] --- eolica: ERROR: GlobalWindAtlasSite not working!!')
+                print(f'                      {e}')
+
+                ## make a weibull distributed site with weibull factors:
+                f = [0.036, 0.039, 0.052, 0.07, 0.084, 0.064, 0.086, 0.118, 0.152, 0.147, 0.1, 0.052]
+                A = [9.177, 9.782, 9.532, 9.91, 10.043, 9.594, 9.584, 10.515, 11.399, 11.687, 11.637, 10.088]
+                k = [2.393, 2.447, 2.412, 2.592, 2.756, 2.596, 2.584, 2.549, 2.471, 2.607, 2.627, 2.326]
+                wd = np.linspace(0, 360, len(f), endpoint=False)
+                ti = .1
+                self.site = XRSite(ds=xr.Dataset(data_vars={'Sector_frequency': ('wd', f), 'Weibull_A': ('wd', A), 'Weibull_k': ('wd', k), 'TI': ti}, coords={'wd': wd}))
         else:
             print(f'[] --- eolica: you did not specify a proper site type!')
 
