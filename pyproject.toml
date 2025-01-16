@@ -19,6 +19,8 @@ PyYAML = "^6.0.0"
 munch = "^4.0.0"
 kaleido = {version = "0.1.0.post1", platform = "win32"}
 osmnx = "2.0.0"
+folium = "0.18.0"
+selenium = "4.27.1"
 
 [build-system]
 requires = ["poetry-core"]
