@@ -8,6 +8,8 @@ def main():
     park = EolicaPark('parks/alkmaar.yaml')
     ## plots for the park:
     ## weibull and windrose plots are made upon construction of the park
+    park.plot_weibull_dists()
+    park.plot_windrose()
     park.plot_turbines_powerCT()       ## turbine power-ct curves
     park.plot_windpark_map()           ## schematic map of the windpark with streets
     park.plot_windpark_map_satellite() ## OSM + satellite map of the park

@@ -97,9 +97,6 @@ class EolicaPark(GlobalWindAtlasSite):
                 ## ## init the globalwindatlassite
                 ## super.__init__(self.xs, self.ys, np.mean(self.alts), self.config.roughness, ti=None)
 
-                # plot a few distributions for the site
-                self.make_weibull_dists()
-                self.make_windrose_plot()
             except Exception as e:
                 #wd = np.linspace(0, 360, len(f), endpoint=False)
                 #self.site = XRSite(ds=xr.Dataset(data_vars={'WS': 10, 'P': ('wd', f), 'TI': ti}, coords={'wd': wd}), shear=PowerShear(h_ref=100, alpha=.2))
@@ -126,7 +123,7 @@ class EolicaPark(GlobalWindAtlasSite):
 
         print(f'[] --- eolica: done loading the site')
 
-    def make_weibull_dists(self):
+    def plot_weibull_dists(self):
         '''
         makes the distributions of the weibull functions for each of the sectors
         '''
@@ -155,7 +152,7 @@ class EolicaPark(GlobalWindAtlasSite):
         fig.savefig(self.results / f'{self.name}_weibull.png')
         fig.savefig(self.results / f'{self.name}_weibull.pdf')
 
-    def make_windrose_plot(self):
+    def plot_windrose(self):
         '''
         makes a nice plot of a windrose for the given weibull distribution
         '''
