@@ -186,7 +186,7 @@ class EolicaSimulation():
 
         simulation_result = self.convert_to_simulation_result(sim_res, dataset.resolution)
 
-        self.save_csv(simulation_result)
+        #self.save_csv(simulation_result)
 
         return simulation_result
 

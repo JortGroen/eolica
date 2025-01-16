@@ -15,14 +15,14 @@ turbines:
       latitude: 52.595889
       longitude: 4.753783
       altitude: 120.
-  - type: 'alkmaar_2p3MW'
+  - type: 'vestas_v136_3p45MW'
     name: 'Turbine 2'
     location:
     location:
       latitude: 52.602287
       longitude: 4.757099
       altitude: 10.
-  - type: 'alkmaar_2p3MW'
+  - type: 'enercon66_1p8MW'
     name: 'Turbine 3'
     location:
     location:

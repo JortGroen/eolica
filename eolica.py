@@ -28,6 +28,7 @@ def main():
     dataset    = EolicaDataset(config_sim)#, message=msg)
 
     sim_res = simulation.simulate_wind_timeseries(dataset)
+    simulation.save_csv(sim_res)
     #res.Power.sel(wt=1).T.plot()
     #plt.show()
 
