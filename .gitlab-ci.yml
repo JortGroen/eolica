@@ -1,0 +1,33 @@
+stages:
+  - release
+
+# =============================================================================
+# Build the packages
+# =============================================================================
+
+.build-package:
+  stage: release
+  tags:
+    - ito
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3.12
+  variables:
+    VERSION_FORMAT: "{base}.post{distance}.dev+{commit}"
+  script:
+    - pip install -r requirements-dev.txt
+    # Guess the version number (no versioneer needed)
+    - DST_VERSION=$(dunamai from git --format "${VERSION_FORMAT}")
+    - echo Write destination version $DST_VERSION
+    - poetry version "$DST_VERSION"
+    # Build the project
+    - poetry build
+    # Push the package
+    - poetry config repositories.gitlab-intern ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
+    - poetry config http-basic.gitlab-intern gitlab-ci-token ${CI_JOB_TOKEN}
+    - poetry publish --repository gitlab-intern
+
+build-package-main:
+  extends: .build-package
+  variables:
+    VERSION_FORMAT: "{base}.post{distance}+{commit}"
+  only:
+    - 1-add-package
