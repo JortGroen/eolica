@@ -30,4 +30,4 @@ build-package-main:
   variables:
     VERSION_FORMAT: "{base}.post{distance}+{commit}"
   only:
-    - 1-add-package
+    - main
