@@ -1,5 +1,5 @@
 simulation_name: 'dummy_simulation'
-park_config: 'parks/alkmaar.yaml'
+park_config: 'parks/prinzendorf.yaml'
 model_type: 'Bastankhah_PorteAgel_2014'
 model_parameters: {k: 0.0324555, TI: 0.0}
 simulation:
@@ -10,7 +10,7 @@ simulation:
   file: 'input_data/wind_2019_hourly_48-48p3_16-16p3.csv' ## required
   selection: {'latitude': 48.25, 'longitude': 16.0} ## optional. set to None otherwise
   features: {'time': 'valid_time', 'wu': 'u100', 'wv': 'v100'} ## required
-  range: {'start': '2019-01-30 01:00:00', 'end': '2019-02-14 23:50:00'} ## if this is None, it will take the full range of the input file
+  range: {'start': '2024-01-30 01:00:00', 'end': '2024-02-14 23:50:00'} ## if this is None, it will take the full range of the input file
 ##
 ## the following is an option for something model-based
 ## simulation:

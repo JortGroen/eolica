@@ -136,7 +136,7 @@ class EolicaSimulation():
 
         return sim_res
         
-    def simulate_wind_timeseries(self, dataset):
+    def simulate_wind_timeseries(self, dataset, shortname=False):
         '''
         this function takes a dataset and performs the simulation of the wind park
         '''
@@ -152,7 +152,10 @@ class EolicaSimulation():
 
         fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
         for it,tn in enumerate(self.park.tnames):
-            axes[0].plot(dataset.df.index, sim_res.Power.sel(wt=it) /1e6, color = utils.utils.many_colors[it], linewidth=0.7, label=tn)
+            axes[0].plot(dataset.df.index, 
+                         sim_res.Power.sel(wt=it) /1e6, 
+                         color = utils.utils.many_colors[it], linewidth=0.7, 
+                         label=tn if not shortname else tn.split(':')[0])
             self.wt_productions.append(sim_res.Power.sel(wt=it).sum() * dataset.resolution / 6e7) ## this is now MWh
         axes[0].legend(ncol=7, prop={'size': 8})
         axes[0].set_ylabel(f'P (MW)')

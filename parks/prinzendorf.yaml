@@ -3,129 +3,129 @@ site_type: 'GlobalWindAtlasSite'
 roughness: 1.0 # roughness from here: https://www.wind-energy-the-facts.org/fundamentals.html
 turbines:
   - type: 'vestas_v90_2MW_mode0'
-    name: 'turbine 0: vestas 2 MW'
+    name: 'turbine 0 (2 MW)'
     location:
       latitude: 48.59736944
       longitude: 16.75381389  #vestas_v90s  plus the altitude here : ,263
       altitude:  263
   - type: 'vestas_v90_2MW_mode0'
-    name: 'turbine 1: vestas 2 MW'
+    name: 'turbine 1 (2 MW)'
     location:
       latitude: 48.595875  
       longitude: 16.74888056  #vestas_v90s  plus the altitude here : ,256
       altitude: 256
   - type: 'vestas_v90_2MW_mode0'
-    name: 'turbine 2: vestas 2 MW'
+    name: 'turbine 2 (2 MW)'
     location:
       latitude: 48.57574167
       longitude: 16.73290556  #vestas_v90s  plus the altitude here : ,281
       altitude: 281
   - type: 'vestas_v90_2MW_mode0'
-    name:  'turbine 3: vestas 2 MW'
+    name:  'turbine 3 (2 MW)'
     location:
       latitude: 48.57039167
       longitude: 16.738925    #vestas_v90s  plus the altitude here : ,296
       altitude: 296
   - type: 'vestas_v90_2MW_mode0'
-    name:  'turbine 4: vestas 2 MW'
+    name:  'turbine 4 (2 MW)'
     location:
       latitude: 48.57015556
       longitude: 16.72798889  #vestas_v90s  plus the altitude here : ,284
       altitude: 284
   - type: 'vestas_v90_2MW_mode0'
-    name:  'turbine 5: vestas 2 MW'
+    name:  'turbine 5 (2 MW)'
     location:
       latitude: 48.56925731
       longitude: 16.72240563  #vestas_v90s  plus the altitude here : ,284
       altitude: 284
   
   - type: 'vestas_v136_4p2MW'
-    name:  'turbine 6: vestas 4.2 MW'
+    name:  'turbine 6 (4.2 MW)'
     location:
       latitude: 48.59116667
       longitude: 16.74810833  # vestasv136  4p2MW plus altitude here: ,284
       altitude: 284
   - type: 'vestas_v136_3p45MW'
-    name:  'turbine 7: vestas 3.45 MW'
+    name:  'turbine 7 (3.45 MW)'
     location:
       latitude: 48.58506389
       longitude: 16.74458056  # vestasv136 3p45MW plus altitude here: ,317
       altitude: 317
   - type: 'vestas_v136_3p45MW'
-    name:  'turbine 8: vestas 3.45 MW'
+    name:  'turbine 8 (3.45 MW)'
     location:
       latitude: 48.5821    
       longitude: 16.74336389  # vestasv136 3p45MW plus altitude here: ,308
       altitude: 308
   - type: 'vestas_v136_4p2MW'
-    name:  'turbine 9: vestas 4.2 MW'
+    name:  'turbine 9 (4.2 MW)'
     location:
       latitude: 48.57926111
       longitude: 16.73974167  # vestasv136  4p2MW plus altitude here: ,301
       altitude: 301
   - type: 'vestas_v136_4p2MW'
-    name:  'turbine 10: vestas 4.2 MW'
+    name:  'turbine 10 (4.2 MW)'
     location:
       latitude: 48.57623611
       longitude: 16.73779444  # vestasv136  4p2MW plus altitude here: ,300
       altitude: 300
   - type: 'vestas_v136_4p2MW'
-    name:  'turbine 11: vestas 4.2 MW'
+    name:  'turbine 11 (4.2 MW)'
     location:
       latitude: 48.58866667
       longitude: 16.73958611  # vestasv136  4p2MW plus altitude here: ,294
       altitude: 294
   - type: 'vestas_v136_4p2MW'
-    name:  'turbine 12: vestas 4.2 MW'
+    name:  'turbine 12 (4.2 MW)'
     location:
       latitude: 48.58407222
       longitude: 16.73706111  # vestasv136  4p2MW plus altitude here: ,284
       altitude: 284
   - type: 'vestas_v136_4p2MW'
-    name:  'turbine 13: vestas 4.2 MW'
+    name:  'turbine 13 (4.2 MW)'
     location:
       latitude: 48.58340278
       longitude: 16.73176389  # vestasv136  4p2MW plus altitude here: ,271
       altitude: 271
   - type: 'vestas_v136_4p2MW'
-    name:  'turbine 14: vestas 4.2 MW'
+    name:  'turbine 14 (4.2 MW)'
     location:
       latitude: 48.57943889
       longitude: 16.73149167  # vestasv136  4p2MW plus altitude here: ,272
       altitude: 272
   - type: 'vestas_v136_4p2MW'
-    name:  'turbine 15: vestas 4.2 MW'
+    name:  'turbine 15 (4.2 MW)'
     location:
       latitude: 48.59235278
       longitude: 16.74178056  # vestasv136  4p2MW plus altitude here: ,263
       altitude: 263
   
   - type: 'enercon66_1p8MW'
-    name:  'turbine 16: enercon66, 1.8 MW'
+    name:  'turbine 16 (1.8 MW)'
     location:
       latitude: 48.59920083
       longitude: 16.76237953 # enercon 66 plus altitude here: ,250
       altitude: 250
   - type: 'enercon66_1p8MW'
-    name:  'turbine 17: enercon66, 1.8 MW'
+    name:  'turbine 17 (1.8 MW)'
     location:
       latitude: 48.59656553
       longitude: 16.76129445 # enercon 66 plus altitude here: ,262
       altitude: 262
   - type: 'enercon66_1p8MW'
-    name:  'turbine 18: enercon66, 1.8 MW'
+    name:  'turbine 18 (1.8 MW)'
     location:
       latitude: 48.59502881
       longitude: 16.75849093 # enercon 66 plus altitude here: ,266
       altitude: 266
   - type: 'enercon66_1p8MW'
-    name:  'turbine 19: enercon66, 1.8 MW'
+    name:  'turbine 19 (1.8 MW)'
     location:
       latitude: 48.59358015
       longitude: 16.75577649 # enercon 66 plus altitude here: ,273
       altitude: 273
   - type: 'enercon66_1p8MW'
-    name:  'turbine 20: enercon66, 1.8 MW'
+    name:  'turbine 20 (1.8 MW)'
     location:
       latitude: 48.59264917
       longitude: 16.75257079 # enercon 66 plus altitude here: ,273

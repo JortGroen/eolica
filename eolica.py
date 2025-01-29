@@ -5,14 +5,14 @@ from eolica.utils import utils
 def main():
     print('[] --- eolica: hi there!')
 
-    park = EolicaPark('parks/alkmaar.yaml')
+    park = EolicaPark('parks/prinzendorf.yaml')
     ## plots for the park:
     ## weibull and windrose plots are made upon construction of the park
     park.plot_weibull_dists()
     park.plot_windrose()
     park.plot_turbines_powerCT()       ## turbine power-ct curves
     park.plot_windpark_map()           ## schematic map of the windpark with streets
-    park.plot_windpark_map_satellite() ## OSM + satellite map of the park
+    #park.plot_windpark_map_satellite() ## OSM + satellite map of the park
 
 #url = f'https://api.globalwindatlas.info/gwa3/v1/get-libfile-point?latitude=52.592999&longitude=4.752301'
 #https://wps.neweuropeanwindatlas.eu/api/microscale-atlas/v1/get-data-point?latitude=48.611803&longitude=16.7412&height=100&variable=elevation&variable=rix&variable=wind_speed&variable=air_dens&variable=power_dens&variable=weib_k_combined&variable=weib_A_combined
@@ -27,7 +27,7 @@ def main():
     res = simulation.make_example_plots()
     dataset    = EolicaDataset(config_sim)#, message=msg)
 
-    sim_res = simulation.simulate_wind_timeseries(dataset)
+    sim_res = simulation.simulate_wind_timeseries(dataset) #, shortname=True)
     simulation.save_csv(sim_res)
     #res.Power.sel(wt=1).T.plot()
     #plt.show()
