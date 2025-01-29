@@ -9,7 +9,7 @@ stages:
   stage: release
   tags:
     - ito
-  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3.12
+  image: python:3.12
   variables:
     VERSION_FORMAT: "{base}.post{distance}.dev+{commit}"
   script:
