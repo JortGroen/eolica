@@ -1,8 +1,19 @@
 import math, os, munch, yaml
 import numpy as np
+import pandas as pd
 
 class EolicaConfigError(Exception):
     pass
+
+def convert_uv_to_ws_wd(df, vars: dict):
+
+    u = df[vars['u']]
+    v = df[vars['v']]
+    ws = np.sqrt(u**2 + v**2)
+    wd = (270 - np.arctan2(v, u) * 180 / np.pi)%360
+    df['ws'] = ws
+    df['wd'] = wd
+    return df
 
 def weibull(x, shape, scale):
     # shape is k, scale is A
@@ -32,7 +43,10 @@ def weibull_strengths(a,k,lst):
 
     return retlist, slist
 
-
+def convert_to_powercurve(original_list):
+    # Create new list of lists
+    new_list = [[0.1 * i, original_list[i]] for i in range(len(original_list))]
+    return new_list
 
 def lat_lon_to_cartesian(lat, lon):
     # Convert latitude and longitude to radians
@@ -68,7 +82,7 @@ def calculate_xy_distances(coords, meters=False):
 
 AIT_COLORS = {'bordeaux':'#79151d', # 2
               'grau':'#7c8388', # 1
-              'türkis':'#31b7bc', # 3
+              'turkis':'#31b7bc', # 3
               'violet':'#470f51', # 4
               '50grau':'lightgray', 
               'schwarz':'#000c20'}
@@ -102,12 +116,88 @@ def load_yaml_config(yamlfile):
         print(f'[] --- utils: ERROR: yaml configuration file does not exist!!')
         exit(1)
 
-    with open(yamlfile, 'r') as file:
+    with open(yamlfile, 'r', encoding='utf-8') as file:
         config = yaml.safe_load(file)
         cfg = munch.munchify(config)
 
     print(f'[] --- utils: done loading yaml file {yamlfile}')
     return cfg
+
+def extrapolate_wind_speed(ws1, h1, h2, alpha=0.14):
+    ws2 = ws1 * (h2 / h1) ** alpha
+    return ws2
+
+def extrapolate_wind_speed_logarithmic(ws1, h1, h2, z0):
+    ws2 = ws1 * (math.log(h2 / z0) / math.log(h1 / z0))
+    return ws2
+
+def check_for_gaps(df, resolution:str, timecol='time'):
+    '''
+    A function to check for time gaps in a dataframe with a time column.
+    '''
+
+    #make temporary column copy of the index column
+    deltas = df[timecol].diff()
+
+    gaps = deltas[deltas != pd.Timedelta(resolution)]
+
+    ngaps = len(gaps)
+
+    gaps = gaps.to_frame()
+    gaps['real'] = gaps['time'].apply(lambda x: x.total_seconds() % pd.Timedelta(resolution).total_seconds() == 0)
+
+    print(f'\tfound {ngaps} in the timeseries:')
+    print(gaps)
+    print('--- --- --- --- --- ---')
+    return gaps
+
+## def fill_gaps(df, resolution: str, mode: str = 'interpolate'): ## other options to follow
+##     '''
+##     Function to fill the gaps in the timeseries.
+## 
+##     Options for the filling method argument are:
+##        * interpolate (default)
+##        * forward     (forward fill)
+##        * backward    (backward fill)
+##     '''
+##     
+##     print('--- TIMESERIES: filling gaps ---')
+## 
+##     if   mode == 'interpolate':
+##         new_ts = df.resample(resolution).interpolate()
+##     elif mode == 'forward':
+##         new_ts = df.resample(resolution).ffill()
+##     elif mode == 'backward':
+##         new_ts = df.resample(resolution).bfill()
+##     else:
+##         print('--- TIMESERIES ERROR ---')
+##         print('you want to fill the gaps with an unkown method, choose from the available:')
+##         print('   - interpolate (default)')
+##         print('   - forward')
+##         print('   - backward')
+## 
+##     if self.gaps is None:
+##         self.check_for_gaps(resolution=resolution)
+## 
+##     ## add a column in the timeseries with boolean
+##     new_ts['interpolated'] = 0
+##     self.col_names.append('interpolated')
+## 
+##     for i_gap in range(len(self.gaps)):
+##         ## make a new column entry in the original dataset that is true/false depending on whether the 
+##         ## entry is a measurement or an interpolation
+##         t_gap = self.gaps.index[i_gap]
+##         new_ts.loc[t_gap - int(self.gaps.loc[t_gap, 'gap_n'])*pd.Timedelta(resolution) : t_gap - pd.Timedelta(resolution), 'interpolated'] = 1
+## 
+##     ##    ## can add smart algorithms here for interpolation
+## 
+##     print(f'--- length of the timeseries before filling the gaps: {len(old_ts)}')
+##     print(f'                              after filling the gaps: {len(new_ts)}')
+## 
+##     ## set the flag that we now have an interpolated timeseries:
+##     self.interpolated = True
+##     self.new_ts = new_ts
+
 
 redis_msg_metno = {
   "id": "1731595767451-0",

@@ -1,0 +1,18 @@
+simulation_name: 'random_calibration'
+park_config: 'parks/hollern.yaml'
+model_type: 'Bastankhah_PorteAgel_2014'
+model_parameters: {k: 0.0324555, TI: 0.0}
+simulation:
+  type: 'wind_series' ## options are 'wind_series', ...
+  file: 'C:/Users/DuenserM/workspace/reformers/data/windpark_yannik/weather_data_geosphere/bruckneudorf_tawes_2020to2024.csv' ## required
+  selection: {'station': 18} ## optional. set to None otherwise
+  features: {'time': 'time', 'ws': 'ff', 'wd': 'dd'} ## required
+  range: {'start': '2024-04-08 20:00:00', 'end': '2024-04-12 23:50:00'} ## if this is None, it will take the full range of the input file
+production:
+  type: 'verbund'
+  # turbine 11 file: 'C:/Users/DuenserM/workspace/reformers/data/windpark_yannik/Hollern_2/WEA_10 Minuten_5327_2024-01-01_2024-12-31.csv'
+  # turbine 11 selection: {'Anlage': 3} ## optional. set to None otherwise
+  file: 'C:/Users/DuenserM/workspace/reformers/data/windpark_yannik/Hollern_1/WEA_10 Minuten_2112_2024-01-01_2024-12-31.csv'
+  selection: {'Anlage': 1}
+  features: {'time': 'Zeit', 'ws': ' Wind Ø [m/s]', 'wd': 'Gondelposition [°]', 'power': ' Leistung Ø [kW]', 'id': 'Anlage', 'nr': 'Seriennr.'} ## required
+  range: {'start': '2024-04-08 20:00:00', 'end': '2024-04-12 23:50:00'} ## if this is None, it will take the full range of the input file

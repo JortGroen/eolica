@@ -1,27 +1,32 @@
-[tool.poetry]
+[project]
 name = "eolica"
 version = "0.0.1"
 description = "a package to simulate windfarms based on pywake. will also do forecasting of energy output given a timeseries of wind speeds"
-authors = ["marc dünser <marc.duenser@ait.ac.at>"]
+authors = [{ name = "marc dünser", email = "marc.duenser@ait.ac.at" }]
+requires-python = ">=3.12"
 readme = "README.md"
-packages =[{include = "eolica"}]
+dependencies = [
+    "numpy>=1.26.0,<2",
+    "pandas>=2.1.1,<3",
+    "matplotlib>=3.8.0,<4",
+    "pathlib>=1.0.0,<2",
+    "pydantic>=2.8.0,<3",
+    "plotly>=5.22.0",
+    "py_wake==2.6.7",
+    "PyYAML>=6.0.0,<7",
+    "munch>=4.0.0,<5",
+    "kaleido==0.1.0.post1 ; sys_platform == 'win32'",
+    "osmnx==2.0.0",
+    "folium==0.18.0",
+    "selenium==4.27.1",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.10"
-numpy = "^1.26.0"
-pandas = "^2.1.1"
-matplotlib = "^3.8.0"
-pathlib = "^1.0.0"
-pydantic = "^2.8.0"
-plotly = ">=5.22.0"
-py_wake = "2.6.7"
-PyYAML = "^6.0.0"
-munch = "^4.0.0"
-kaleido = {version = "0.1.0.post1", platform = "win32"}
-osmnx = "2.0.0"
-folium = "0.18.0"
-selenium = "4.27.1"
+[tool.hatch.build.targets.sdist]
+include = ["eolica"]
+
+[tool.hatch.build.targets.wheel]
+include = ["eolica"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

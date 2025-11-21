@@ -1,0 +1,89 @@
+park_name: 'random'
+site_type: 'GlobalWindAtlasSite'
+roughness: 0.001 # roughness from here: https://www.wind-energy-the-facts.org/fundamentals.html
+turbines:
+  - type: 'enercon_E66_2p0MW'
+    name: 'turbine 0 (2 MW)'
+    location:
+      latitude: 48.095667
+      longitude: 16.878264
+      altitude: 190
+  - type: 'enercon_E66_2p0MW'
+    name: 'turbine 1 (2 MW)'
+    location:
+      latitude: 48.095288
+      longitude: 16.886857
+      altitude: 189.5
+  - type: 'enercon_E66_2p0MW'
+    name: 'turbine 2 (2 MW)'
+    location:
+      latitude: 48.094377
+      longitude: 16.890987
+      altitude: 185.9
+  - type: 'enercon_E66_2p0MW'
+    name: 'turbine 3 (2 MW)'
+    location:
+      latitude: 48.093136
+      longitude: 16.899689
+      altitude: 180
+  - type: 'enercon_E66_2p0MW'
+    name: 'turbine 4 (2 MW)'
+    location:
+      latitude: 48.092189
+      longitude: 16.885964
+      altitude: 181.1
+  - type: 'enercon_E66_2p0MW'
+    name: 'turbine 5 (2 MW)'
+    location:
+      latitude: 48.089383
+      longitude: 16.893383
+      altitude: 178.2
+  - type: 'enercon_E66_2p0MW'
+    name: 'turbine 6 (2 MW)'
+    location:
+      latitude: 48.088702
+      longitude: 16.89823 
+      altitude: 180
+  - type: 'enercon_E66_2p0MW'
+    name: 'turbine 7 (2 MW)'
+    location:
+      latitude: 48.087825
+      longitude: 16.904611
+      altitude: 180
+  - type: 'enercon_E66_2p0MW'
+    name: 'turbine 8 (2 MW)'
+    location:
+      latitude: 48.085128
+      longitude: 16.904026
+      altitude: 180
+
+  - type: 'enercon_E101_3p05MW'
+    name: 'turbine 9 (3 MW)'
+    location:
+      latitude: 48.092038
+      longitude: 16.879808
+      altitude: 173.77
+  - type: 'enercon_E101_3p05MW'
+    name: 'turbine 10 (3 MW)'
+    location:
+      latitude: 48.092038
+      longitude: 16.896319
+      altitude: 187.55
+  - type: 'enercon_E101_3p05MW'
+    name: 'turbine 11 (3 MW)'
+    location:
+      latitude: 48.08603 
+      longitude: 16.878011
+      altitude: 152.94
+  - type: 'enercon_E101_3p05MW'
+    name: 'turbine 12 (3 MW)'
+    location:
+      latitude: 48.088727
+      longitude: 16.879691
+      altitude: 159.38
+  - type: 'enercon_E101_3p05MW'
+    name: 'turbine 13 (3 MW)'
+    location:
+      latitude: 48.08897 
+      longitude: 16.886324
+      altitude: 166.55
