@@ -21,6 +21,7 @@ stages:
     # Guess the version number (no versioneer needed)
     - DST_VERSION=$(dunamai from git --format "${VERSION_FORMAT}")
     - echo Write destination version $DST_VERSION
+    - echo $DST_VERSION > version.txt          # Save version info to a file
     # Update version in pyproject.toml using Python
     - python -c "import tomllib; import tomli_w; f=open('pyproject.toml','rb'); d=tomllib.load(f); f.close(); d['project']['version']='$DST_VERSION'; f=open('pyproject.toml','wb'); tomli_w.dump(d,f); f.close()"
     # Build the project using uv
