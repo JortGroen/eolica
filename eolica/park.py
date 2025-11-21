@@ -204,13 +204,32 @@ class EolicaPark(GlobalWindAtlasSite):
         outdir.mkdir(exist_ok=True)
 
         tlist = list(set(self.tclass))
-        nrow = int(len(tlist)/2)+1
-        fig = plt.figure(figsize=(14,5*nrow))
+        nrow = int(len(tlist)/2)+len(tlist)%2
+        fig = plt.figure(figsize=(14 if len(tlist) > 1 else 7,5*nrow))
         for ti, t in enumerate(tlist):
             myint = int(100*nrow + 20 + (ti+1))
-            fig.add_subplot(myint).set_ylim(0., 4.5e6)
-            t.plot_power_ct()
-        plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05, wspace=0.3, hspace=0.3)
+            if len(tlist) > 1:
+                fig.add_subplot(myint).set_ylim(0., 4.5e6)
+
+            axs = t.plot_power_ct()
+            line0 = axs[0].get_lines()[0]
+            line0.set_linewidth(2)
+            line0.set_color(utils.utils.AIT_COLORS['bordeaux'])
+            axs[0].set_xlabel(axs[0].get_xlabel().replace('[','(').replace(']',')'))
+            axs[0].set_ylabel(axs[0].get_ylabel().replace('[','(').replace(']',')'), fontsize=12, color=line0.get_color())
+            axs[0].tick_params(axis='y', colors=line0.get_color())
+            axs[0].set_ylim(bottom=0)
+            
+            line1 = axs[1].get_lines()[0]
+            line1.set_color(utils.utils.AIT_COLORS['turkis'])
+            line1.set_linewidth(2)
+            axs[1].set_ylim([0., 1.])
+            axs[1].set_ylabel(axs[1].get_ylabel(), fontsize=12, color=line1.get_color())
+            axs[1].tick_params(axis='y', colors=line1.get_color())
+            axs[1].set_ylim(bottom=0)
+
+        if len(tlist) > 1:
+            plt.subplots_adjust(left=0.05, right=0.95, top=0.90, bottom=0.10, wspace=0.3, hspace=0.3)
 
         fig.savefig(outdir / 'turbine_types.png', dpi=400)
         fig.savefig(outdir / 'turbine_types.pdf', dpi=400)

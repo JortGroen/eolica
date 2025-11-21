@@ -20,6 +20,10 @@ class EolicaSimulation():
         self.simulation_results = self.park.results / 'simulations' / self.config.simulation_name
         self.simulation_results.mkdir(exist_ok=True, parents=True)
 
+        self.fullname = self.config.simulation_name + '_' + f'__'.join([str(i).replace(' ','_').replace(':','') for i in list(self.config.simulation.range.values())])
+
+        self.simulation_file = self.simulation_results / f'power_output_allTurbines_{self.fullname}.csv'
+
     def load_configuration(self, yamlfile):
         '''
         loads the yaml file into a data/config dictionary
@@ -28,7 +32,7 @@ class EolicaSimulation():
             print(f'[] --- eolica: ERROR: simulation configuration file does not exist!!')
             exit(1)
 
-        with open(yamlfile, 'r') as file:
+        with open(yamlfile, 'r', encoding='utf-8') as file:
             config = yaml.safe_load(file)
             self.config = munch.munchify(config)
 
@@ -141,7 +145,10 @@ class EolicaSimulation():
         this function takes a dataset and performs the simulation of the wind park
         '''
 
-        sim_res = self.model(self.park.xs, self.park.ys,
+        #dataset.df.ws = utils.utils.extrapolate_wind_speed_logarithmic(dataset.df.ws,10,100,self.park.config.roughness) ## DANGER!!!!
+        dataset.df.ws = utils.utils.extrapolate_wind_speed(dataset.df.ws,10,100)
+
+        self.sim_res = self.model(self.park.xs, self.park.ys,
                              wd=dataset.df.wd,
                              ws=dataset.df.ws,
                              time=dataset.df.index,
@@ -153,13 +160,14 @@ class EolicaSimulation():
         fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
         for it,tn in enumerate(self.park.tnames):
             axes[0].plot(dataset.df.index, 
-                         sim_res.Power.sel(wt=it) /1e6, 
+                         self.sim_res.Power.sel(wt=it) /1e6, 
                          color = utils.utils.many_colors[it], linewidth=0.7, 
                          label=tn if not shortname else tn.split(':')[0])
-            self.wt_productions.append(sim_res.Power.sel(wt=it).sum() * dataset.resolution / 6e7) ## this is now MWh
+            self.wt_productions.append(self.sim_res.Power.sel(wt=it).sum() * dataset.resolution / 6e7) ## this is now MWh
         axes[0].legend(ncol=7, prop={'size': 8})
         axes[0].set_ylabel(f'P (MW)')
-        axes[0].set_ylim(0., 6)
+        ymax = max(self.park.turbines.power(20, type=x) for x in self.park.turbines.types()) / 1e6
+        axes[0].set_ylim(0., ymax*1.30)
         title1 = axes[0].set_title(f'output power for windpark {self.park.config.park_name}', loc='left')
         axes[0].text(1.0, 1.05, f'total output: {sum(self.wt_productions) / 1e3:.3f} GWh', transform=axes[0].transAxes, ha='right', fontsize=title1.get_size())
         norm = plt.Normalize(0., max(dataset.df.ws))
@@ -180,14 +188,14 @@ class EolicaSimulation():
         #axes[0].xaxis.set_major_formatter(
         #    mdates.ConciseDateFormatter(axes[0].xaxis.get_major_locator()))
 
-        aep = sim_res.aep().sum()
+        aep = self.sim_res.aep().sum()
 
-        fig.savefig(self.simulation_results / f'power_output_allTurbines.png', dpi=400)
-        fig.savefig(self.simulation_results / f'power_output_allTurbines.pdf', dpi=400)
+        fig.savefig(self.simulation_results / f'power_output_allTurbines_{self.fullname}.png', dpi=400)
+        fig.savefig(self.simulation_results / f'power_output_allTurbines_{self.fullname}.pdf', dpi=400)
 
         print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {sum(self.wt_productions):.3f} GWh')
 
-        simulation_result = self.convert_to_simulation_result(sim_res, dataset.resolution)
+        simulation_result = self.convert_to_simulation_result(self.sim_res, dataset.resolution)
 
         #self.save_csv(simulation_result)
 
@@ -214,13 +222,81 @@ class EolicaSimulation():
 
         return sim_res_dict
 
-    def save_csv(self, simulation_result):
+    def save_simulation(self, simulation_result):
+        '''
+        function to save the simulation to a csv file
+        '''
 
         #del simulation_result['total_production']
         simulation_result.pop('total_production')
         output_df = pd.DataFrame(simulation_result)
 
         print(f'[] --- eolica: saving the simulation as a csv file!')
-        output_df.to_csv(self.simulation_results / f'power_output_allTurbines.csv')
+        output_df.to_csv(self.simulation_file, index=False)
+
+        print(f'[] --- eolica: done saving the simulation as a csv file in file {self.simulation_filen}!')
+
+        
+    def compare_to_production(self, production, suffix=''):
+        '''
+        function to compare a simulation to the production data
+        '''
+
+        df_prod = production.df
+        df_prod['power'] = df_prod['power'] * 1e3
+
+
+        for wt in range(len(self.sim_res.wt)):
+            if not wt==0: continue
+            sim = self.sim_res.sel(wt=wt).to_dataframe()
+
+            color_sim  = 'xkcd:grey blue'
+            color_prod = 'xkcd:wine'
+
+            fig, axes = plt.subplots(2,1, sharex=True, figsize=(15,6))
+            ## simulation
+            axes[0].plot(sim.index, 
+                         sim.Power /1e6, 
+                         color = color_sim, linewidth=1.2, 
+                         label='simulation of turbine')
+            total_sim = sim.Power.sum() * production.resolution / 6e7 ## this is now MWh
+            ## actual production
+            axes[0].plot(df_prod.index, 
+                         df_prod['power'] /1e6, 
+                         color = color_prod, linewidth=1.2, 
+                         label='actual production of turbine')
+            total_prod = df_prod['power'].sum() * production.resolution / 6e7 ## this is now MWh
+        
+            axes[0].legend(prop={'size': 8})
+            axes[0].set_ylabel(f'P (MW)')
+            ymax = max(self.park.turbines.power(20, type=x) for x in self.park.turbines.types()) / 1e6
+            axes[0].set_ylim(0., ymax*1.30)
+            title1 = axes[0].set_title(f'sim/prod comparison power for windpark {self.park.config.park_name}: {suffix}', loc='left')
+            axes[0].text(1.00, 1.05, f'z$_{0}$: {self.park.config.roughness}', transform=axes[0].transAxes, ha='right')
+            axes[0].text(0.01, 0.90, f'E$_{{tot}}$ simulated: {total_sim:.1f} MWh', transform=axes[0].transAxes, ha='left', fontsize=title1.get_size())
+            axes[0].text(0.01, 0.79, f'E$_{{tot}}$ actual:    {total_prod:.1f} MWh', transform=axes[0].transAxes, ha='left', fontsize=title1.get_size())
+
+            axes[1].quiver(sim.index    , sim['ws'], 
+                           np.cos(np.deg2rad( (270. - sim['wd']) % 360 )), np.sin(np.deg2rad( (270. - sim['wd']) % 360 )), 
+                           pivot="middle", color=color_sim, linewidth=1.00, scale=100, width=0.0012, label='wind$_{{simulated}}$')
+
+            axes[1].quiver(df_prod.index , df_prod['ws'], 
+                           df_prod['ws_u_norm'], df_prod['ws_v_norm'], 
+                           pivot="middle", color=color_prod, linewidth=1.00, scale=100, width=0.0012, label='wind$_{{at turbine}}$')
+
+            axes[1].set_title('wind direction and speed', loc='left')
+            axes[1].set_ylabel('wind speed (m/s)')
+            axes[1].legend(prop={'size': 8})
+            _ = axes[1].set_xlabel('time')
+
+            suf = '' if not suffix else f'_{suffix}'
+
+            fig.savefig(self.simulation_results / f'power_comparison_wt{wt}_{self.fullname}{suf}.png', dpi=400)
+            fig.savefig(self.simulation_results / f'power_comparison_wt{wt}_{self.fullname}{suf}.pdf', dpi=400)
+
+        #print(f'[] --- eolica: the total production of {self.park.config.park_name} in the chosen range is {sum(self.wt_productions):.3f} GWh')
+        
+
+        print(f'[] --- eolica: done loading the production data')
 
             

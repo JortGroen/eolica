@@ -1,0 +1,82 @@
+park_name: 'Handalm'
+site_type: 'GlobalWindAtlasSite'
+roughness: 1.0 # roughness from here: https://www.wind-energy-the-facts.org/fundamentals.html
+turbines:
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-01'
+    location:
+      latitude: 46.8528697
+      longitude: 15.0123431
+      altitude: 1826.99
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-02'
+    location:
+      latitude: 46.8510000
+      longitude: 15.0140709
+      altitude: 1840.27
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-03'
+    location:
+      latitude: 46.8493782
+      longitude: 15.0163478
+      altitude: 1865.10
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-04'
+    location:
+      latitude: 46.8478668
+      longitude: 15.0188429
+      altitude: 1879.09
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-05'
+    location:
+      latitude: 46.8463162
+      longitude: 15.0211545
+      altitude: 1900.00
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-06'
+    location:
+      latitude: 46.8444772
+      longitude: 15.0230761
+      altitude: 1878.39
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-07'
+    location:
+      latitude: 46.8431885
+      longitude: 15.0287721
+      altitude: 1793.62
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-08'
+    location:
+      latitude: 46.8430866
+      longitude: 15.0323171
+      altitude: 1783.80
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-09'
+    location:
+      latitude: 46.8423058
+      longitude: 15.0364162
+      altitude: 1767.83
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-10'
+    location:
+      latitude: 46.8405689
+      longitude: 15.0393272 
+      altitude: 1775.06
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-11'
+    location:
+      latitude: 46.8391898
+      longitude: 15.0427185
+      altitude: 1809.10
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-12'
+    location:
+      latitude: 46.8387133
+      longitude: 15.0460922
+      altitude: 1784.53
+  - type: 'enercon_E82_3p02MW'
+    name: 'WEA-13'
+    location:
+      latitude: 46.8368808
+      longitude: 15.0477411
+      altitude: 1761.71
