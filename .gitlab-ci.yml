@@ -16,7 +16,7 @@ stages:
     # Install uv
     - pip install uv
     # Install dev dependencies (dunamai for version management, build tools)
-    - uv pip install dunamai build twine tomli-w
+    - uv pip install --system dunamai build twine tomli-w
   script:
     # Guess the version number (no versioneer needed)
     - DST_VERSION=$(dunamai from git --format "${VERSION_FORMAT}")
@@ -25,8 +25,8 @@ stages:
     - python -c "import tomllib; import tomli_w; f=open('pyproject.toml','rb'); d=tomllib.load(f); f.close(); d['project']['version']='$DST_VERSION'; f=open('pyproject.toml','wb'); tomli_w.dump(d,f); f.close()"
     # Build the project using uv
     - uv build
-    ## Push the package to GitLab PyPI
-    #- twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi --username gitlab-ci-token --password ${CI_JOB_TOKEN} dist/*
+    # Push the package to GitLab PyPI
+    - twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi --username gitlab-ci-token --password ${CI_JOB_TOKEN} dist/*
 
 build-package-main:
   extends: .build-package
