@@ -9,7 +9,7 @@ stages:
   stage: release
   tags:
     - ito
-  image: python:3.12
+  image: python:3.13
   variables:
     VERSION_FORMAT: "{base}.post{distance}.dev+{commit}"
   before_script:
@@ -25,8 +25,8 @@ stages:
     - python -c "import tomllib; import tomli_w; f=open('pyproject.toml','rb'); d=tomllib.load(f); f.close(); d['project']['version']='$DST_VERSION'; f=open('pyproject.toml','wb'); tomli_w.dump(d,f); f.close()"
     # Build the project using uv
     - uv build
-    # Push the package to GitLab PyPI
-    - twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi --username gitlab-ci-token --password ${CI_JOB_TOKEN} dist/*
+    ## Push the package to GitLab PyPI
+    #- twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi --username gitlab-ci-token --password ${CI_JOB_TOKEN} dist/*
 
 build-package-main:
   extends: .build-package
