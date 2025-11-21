@@ -19,6 +19,7 @@ dependencies = [
     "osmnx==2.0.0",
     "folium==0.18.0",
     "selenium==4.27.1",
+    "xarray>=2025.1.1",
 ]
 
 [tool.hatch.build.targets.sdist]
