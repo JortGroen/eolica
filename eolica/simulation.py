@@ -5,6 +5,7 @@ from py_wake.flow_map import HorizontalGrid
 import itertools, yaml, munch, os
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
 from eolica import utils
+from eolica.dataset import EolicaDataset
 
 class EolicaSimulation():
 
@@ -140,7 +141,7 @@ class EolicaSimulation():
 
         return sim_res
         
-    def simulate_wind_timeseries(self, dataset, shortname=False):
+    def simulate_wind_timeseries(self, dataset: EolicaDataset, shortname=False):
         '''
         this function takes a dataset and performs the simulation of the wind park
         '''
@@ -234,7 +235,7 @@ class EolicaSimulation():
         print(f'[] --- eolica: saving the simulation as a csv file!')
         output_df.to_csv(self.simulation_file, index=False)
 
-        print(f'[] --- eolica: done saving the simulation as a csv file in file {self.simulation_filen}!')
+        print(f'[] --- eolica: done saving the simulation as a csv file in file {self.simulation_file}!')
 
         
     def compare_to_production(self, production, suffix=''):
