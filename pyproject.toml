@@ -12,14 +12,13 @@ dependencies = [
     "pathlib>=1.0.0,<2",
     "pydantic>=2.8.0,<3",
     "plotly>=5.22.0",
-    "py_wake==2.6.7",
+    "py_wake==2.6.14",
     "PyYAML>=6.0.0,<7",
     "munch>=4.0.0,<5",
     "kaleido==0.1.0.post1 ; platform_system == 'Windows'",
     "osmnx==2.0.0",
     "folium==0.18.0",
-    "selenium==4.27.1",
-    "xarray>=2025.1.1",
+    "selenium==4.27.1"
 ]
 
 [tool.hatch.build.targets.sdist]
