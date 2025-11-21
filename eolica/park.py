@@ -18,20 +18,31 @@ from py_wake.site.shear import PowerShear
 from py_wake.wind_turbines import WindTurbine, WindTurbines
 from .turbines import turbine_dict, turbine_icons
 from eolica import utils
+from eolica.utils.utils import EolicaConfigError
 
 class EolicaPark(GlobalWindAtlasSite):
     '''
     this is a class to host the windpark object
     '''
 
-    def __init__(self, yamlfile) -> None: 
+    def __init__(self, park_config_file: str = None, turbine_config_file: str = None) -> None: 
+        # Safety check: park_config_file is required
+        if park_config_file is None or park_config_file == '':
+            raise EolicaConfigError('park_config_file is required. Please provide a valid park configuration file path.')
+        
         self.config = None
         self.name = None
         self.lats, self.lons, self.alts = [], [], []
         self.ttypes, self.tclass, self.tnames = [], [], []
+        self.hub_heights, self.rotor_diameters, self.max_powers = [], [], []
         self.site, self.turbines = None, None
+        self.turbine_config_file = turbine_config_file
+        self.turbine_config = None
+        self.turbine_type_icons = {}  # Mapping for custom turbine icons
 
-        self.load_configuration(yamlfile)
+        self.load_configuration(park_config_file)
+        if self.turbine_config_file:
+            self.load_turbine_configuration(self.turbine_config_file)
         self.load_turbines()
         self.load_site()
         
@@ -53,23 +64,218 @@ class EolicaPark(GlobalWindAtlasSite):
 
         print(f'[] --- eolica: done loading the park configuration')
 
+    def load_turbine_configuration(self, yamlfile):
+        '''
+        loads the turbine configuration yaml file into a dictionary
+        '''
+        self.turbine_config = utils.utils.load_yaml_config(yamlfile)
+        # Build a mapping of turbine types to icons for custom turbines
+        self._build_turbine_icon_mapping()
+        print(f'[] --- eolica: done loading the turbine configuration')
+    
+    def _build_turbine_icon_mapping(self):
+        '''
+        Builds a mapping of turbine types to icons, ensuring each type gets a unique icon.
+        First tries to match with existing turbine_icons, then assigns unique icons from available pool.
+        '''
+        if not self.turbine_config or not hasattr(self.turbine_config, 'turbine_types'):
+            return
+        
+        # Available icon files (excluding the default one)
+        available_icons = [
+            'turbine_red.png', 'turbine_green.png', 'turbine_pinkish.png', 
+            'turbine_tall.png', 'turbine_lightblue.png', 'turbine_yellow.png',
+            'turbine_dark.png', 'turbine_light.png', 'turbine_opaque.png',
+            'turbine_rby.png'
+        ]
+        
+        # Create a case-insensitive lookup dictionary from turbine_icons
+        icon_lookup = {k.lower(): v for k, v in turbine_icons.items()}
+        
+        # Track which icons have been assigned
+        used_icons = set()
+        self.turbine_type_icons = {}
+        
+        # First pass: try to match with existing turbine_icons (case-insensitive)
+        for turbine_type_name in self.turbine_config.turbine_types.keys():
+            turbine_type_lower = turbine_type_name.lower()
+            
+            # Try exact match first
+            if turbine_type_lower in icon_lookup:
+                icon_file = icon_lookup[turbine_type_lower]
+                self.turbine_type_icons[turbine_type_name] = icon_file
+                self.turbine_type_icons[turbine_type_lower] = icon_file  # Also store lowercase version
+                used_icons.add(icon_file)
+            else:
+                # Try partial match (e.g., "alkmaar_2p3MW" matches "alkmaar_2p3MW")
+                matched = False
+                for key, icon_file in icon_lookup.items():
+                    # Check if turbine type contains key or vice versa (normalized)
+                    if (turbine_type_lower.replace('_', '').replace('-', '') == 
+                        key.replace('_', '').replace('-', '') or
+                        turbine_type_lower.startswith(key.split('_')[0]) or
+                        key.startswith(turbine_type_lower.split('_')[0])):
+                        self.turbine_type_icons[turbine_type_name] = icon_file
+                        self.turbine_type_icons[turbine_type_lower] = icon_file
+                        used_icons.add(icon_file)
+                        matched = True
+                        break
+                
+                if not matched:
+                    # Assign a unique icon from available pool
+                    for icon_file in available_icons:
+                        if icon_file not in used_icons:
+                            self.turbine_type_icons[turbine_type_name] = icon_file
+                            self.turbine_type_icons[turbine_type_lower] = icon_file
+                            used_icons.add(icon_file)
+                            break
+                    else:
+                        # If all icons are used, cycle through them
+                        icon_file = available_icons[len(used_icons) % len(available_icons)]
+                        self.turbine_type_icons[turbine_type_name] = icon_file
+                        self.turbine_type_icons[turbine_type_lower] = icon_file
+
     def load_turbines(self):
         '''
         this function loads the turbines into a pywake windturbinelist
         '''
         
-        for turbine in self.config.turbines:
-            self.lats  .append(turbine.location.latitude )
-            self.lons  .append(turbine.location.longitude)
-            self.alts  .append(turbine.location.altitude )
-            self.ttypes.append(turbine.type)
-            self.tnames.append(turbine.name)
-            try:
-                self.tclass.append(turbine_dict[turbine.type])
-            except KeyError:
-                print(f'[] --- ERROR: check the exact turbine type name in your yaml file!')
-                print(f'[] --- ERROR: you are trying to load a turbine with name {turbine.type} which is not supported.')
-                print(f'[] --- ERROR: available types are: {list(turbine_dict.keys())}')
+        # If turbine_config_file is provided, create turbines dynamically from config
+        if self.turbine_config_file and self.turbine_config:
+            # Create a dictionary to store turbine types from config file
+            turbine_type_dict = {}
+            
+            # Load turbine types from config file
+            for turbine_type_name, turbine_spec in self.turbine_config.turbine_types.items():
+                # Convert turbine type name to lowercase for matching (e.g., "Alkmaar_2p3MW" -> "alkmaar_2p3mw")
+                turbine_type_key = turbine_type_name.lower()
+                
+                # Get power and thrust curves
+                binning = np.array(turbine_spec.binning)
+                power_curve = np.array(turbine_spec.power_curve)
+                thrust_curve = np.array(turbine_spec.thrust_curve)
+                
+                # Convert power curve to W for py_wake (unit is specified in config)
+                if hasattr(turbine_spec, 'unit') and turbine_spec.unit == 'kW':
+                    # Power curve is in kW, convert to W for py_wake
+                    power_curve_w = power_curve * 1000.0
+                else:
+                    # Assume it's already in W if unit is not specified or is 'W'
+                    power_curve_w = power_curve
+                
+                # Create power curve array in format [wind_speed, power]
+                pc_array = np.column_stack([binning, power_curve_w])
+                
+                # Create thrust curve array (ct values correspond to binning)
+                ct_array = np.column_stack([binning, thrust_curve])
+                
+                # Create a dynamic WindTurbine class for this turbine type
+                # We'll create instances with hub_height and diameter from park config
+                turbine_type_dict[turbine_type_key] = {
+                    'pc_array': pc_array,
+                    'ct_array': ct_array,
+                    'name': turbine_type_name
+                }
+            
+            # Now create WindTurbine instances for each turbine in the park
+            for turbine in self.config.turbines:
+                self.lats.append(turbine.location.latitude)
+                self.lons.append(turbine.location.longitude)
+                self.alts.append(turbine.location.altitude)
+                self.ttypes.append(turbine.type)
+                self.tnames.append(turbine.name)
+                
+                # Get hub_height and rotor_diameter from park config (per turbine)
+                hub_height = getattr(turbine, 'hub_height', None)
+                rotor_diameter = getattr(turbine, 'rotor_diameter', None)
+                
+                # Convert turbine type to lowercase for matching
+                turbine_type_key = turbine.type.lower()
+                
+                if turbine_type_key in turbine_type_dict:
+                    # Get the turbine spec from config
+                    spec = turbine_type_dict[turbine_type_key]
+                    
+                    # Check if hub_height and rotor_diameter are provided
+                    if hub_height is None or rotor_diameter is None:
+                        raise EolicaConfigError(
+                            f'Turbine {turbine.name} (type: {turbine.type}) requires hub_height and rotor_diameter '
+                            f'in the park configuration file when using turbine_config_file.'
+                        )
+                    
+                    # Calculate maximum rated power from power curve (in W)
+                    max_power_w = np.max(spec['pc_array'][:, 1])
+                    
+                    # Store turbine dimensions and power
+                    self.hub_heights.append(hub_height)
+                    self.rotor_diameters.append(rotor_diameter)
+                    self.max_powers.append(max_power_w / 1e6)  # Convert to MW for display
+                    
+                    # Create WindTurbine instance with curves and dimensions from config
+                    from py_wake.wind_turbines.power_ct_functions import PowerCtTabular
+                    power_ct_func = PowerCtTabular(
+                        spec['pc_array'][:, 0],  # wind speeds
+                        spec['pc_array'][:, 1],  # power in W
+                        'w',
+                        spec['ct_array'][:, 1],  # thrust coefficients
+                        method='linear'
+                    )
+                    
+                    # Create a WindTurbine instance
+                    wt = WindTurbine(
+                        name=turbine.type,
+                        diameter=rotor_diameter,
+                        hub_height=hub_height,
+                        powerCtFunction=power_ct_func
+                    )
+                    
+                    self.tclass.append(wt)
+                else:
+                    raise EolicaConfigError(
+                        f'Turbine type "{turbine.type}" not found in turbine_config_file. '
+                        f'Available types: {list(turbine_type_dict.keys())}'
+                    )
+        else:
+            # Original behavior: use turbine_dict from turbines.py
+            for turbine in self.config.turbines:
+                self.lats.append(turbine.location.latitude)
+                self.lons.append(turbine.location.longitude)
+                self.alts.append(turbine.location.altitude)
+                self.ttypes.append(turbine.type)
+                self.tnames.append(turbine.name)
+                
+                # Get hub_height and rotor_diameter from park config if available
+                hub_height = getattr(turbine, 'hub_height', None)
+                rotor_diameter = getattr(turbine, 'rotor_diameter', None)
+                
+                try:
+                    wt = turbine_dict[turbine.type]
+                    self.tclass.append(wt)
+                    
+                    # Store turbine dimensions (use from config if available, otherwise from turbine object)
+                    if hub_height is not None:
+                        self.hub_heights.append(hub_height)
+                    else:
+                        self.hub_heights.append(wt.hub_height())
+                    
+                    if rotor_diameter is not None:
+                        self.rotor_diameters.append(rotor_diameter)
+                    else:
+                        self.rotor_diameters.append(wt.diameter())
+                    
+                    # Calculate maximum rated power (in MW)
+                    # Get power at high wind speed (20 m/s) as approximation of rated power
+                    max_power_w = wt.power(20.0)
+                    self.max_powers.append(max_power_w / 1e6)  # Convert to MW for display
+                    
+                except KeyError:
+                    print(f'[] --- ERROR: check the exact turbine type name in your yaml file!')
+                    print(f'[] --- ERROR: you are trying to load a turbine with name {turbine.type} which is not supported.')
+                    print(f'[] --- ERROR: available types are: {list(turbine_dict.keys())}')
+                    # Add None values to keep lists in sync
+                    self.hub_heights.append(None)
+                    self.rotor_diameters.append(None)
+                    self.max_powers.append(None)
 
         self.mean_lat = np.mean(self.lats)
         self.mean_lon = np.mean(self.lons)
@@ -282,9 +488,50 @@ class EolicaPark(GlobalWindAtlasSite):
                                 control = True).add_to(map_osm)
 
         # add markers for each GPS coordinate
-        for tn, tt, lat, lon in zip(self.tnames, self.ttypes, self.lats, self.lons):
-            myicon = folium.CustomIcon( f'eolica/utils/folium_icons/{turbine_icons[tt]}', icon_size=(66, 66))
-            folium.Marker(location=[lat, lon], popup=f'{tn}', icon=myicon).add_to(map_osm)
+        for i, (tn, tt, lat, lon) in enumerate(zip(self.tnames, self.ttypes, self.lats, self.lons)):
+            # Use different icon for each turbine type
+            # First try custom turbine icon mapping (for turbines loaded from config)
+            if hasattr(self, 'turbine_type_icons') and self.turbine_type_icons:
+                # Try exact match first
+                icon_file = self.turbine_type_icons.get(tt)
+                # Try lowercase match
+                if icon_file is None:
+                    icon_file = self.turbine_type_icons.get(tt.lower())
+                # Try original turbine_icons as fallback
+                if icon_file is None:
+                    icon_file = turbine_icons.get(tt)
+                # Final fallback
+                if icon_file is None:
+                    icon_file = 'turbine_lightblue.png'
+            else:
+                # Use standard turbine_icons lookup
+                icon_file = turbine_icons.get(tt, 'turbine_lightblue.png')
+            
+            myicon = folium.CustomIcon( f'eolica/utils/folium_icons/{icon_file}', icon_size=(66, 66))
+            
+            # Create rich popup with turbine information
+            hub_h = self.hub_heights[i] if i < len(self.hub_heights) else None
+            rotor_d = self.rotor_diameters[i] if i < len(self.rotor_diameters) else None
+            max_p = self.max_powers[i] if i < len(self.max_powers) else None
+            
+            # Build popup HTML content
+            popup_html = f'<div style="font-family: Arial, sans-serif;">'
+            popup_html += f'<h3 style="margin-top: 0; margin-bottom: 10px;">{tn}</h3>'
+            popup_html += f'<table style="border-collapse: collapse; width: 100%;">'
+            
+            if tt:
+                popup_html += f'<tr><td style="padding: 5px; font-weight: bold;">Type:</td><td style="padding: 5px;">{tt}</td></tr>'
+            if hub_h is not None:
+                popup_html += f'<tr><td style="padding: 5px; font-weight: bold;">Hub Height:</td><td style="padding: 5px;">{hub_h:.1f} m</td></tr>'
+            if rotor_d is not None:
+                popup_html += f'<tr><td style="padding: 5px; font-weight: bold;">Rotor Diameter:</td><td style="padding: 5px;">{rotor_d:.1f} m</td></tr>'
+            if max_p is not None:
+                popup_html += f'<tr><td style="padding: 5px; font-weight: bold;">Rated Power:</td><td style="padding: 5px;">{max_p:.2f} MW</td></tr>'
+            
+            popup_html += f'</table></div>'
+            
+            popup = folium.Popup(popup_html, max_width=300)
+            folium.Marker(location=[lat, lon], popup=popup, icon=myicon).add_to(map_osm)
 
         # add a toggle of the layers
         folium.LayerControl().add_to(map_osm)
