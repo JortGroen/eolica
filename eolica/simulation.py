@@ -21,7 +21,11 @@ class EolicaSimulation():
         self.simulation_results = self.park.results / 'simulations' / self.config.simulation_name
         self.simulation_results.mkdir(exist_ok=True, parents=True)
 
-        self.fullname = self.config.simulation_name + '_' + f'__'.join([str(i).replace(' ','_').replace(':','') for i in list(self.config.simulation.range.values())])
+        if self.config.simulation.range:
+            rangestring = f'__'.join([str(i).replace(' ','_').replace(':','') for i in list(self.config.simulation.range.values())])
+            self.fullname = self.config.simulation_name + '_' + rangestring
+        else:
+            self.fullname = self.config.simulation_name
 
         self.simulation_file = self.simulation_results / f'power_output_allTurbines_{self.fullname}.csv'
 
@@ -34,6 +38,7 @@ class EolicaSimulation():
             exit(1)
 
         with open(yamlfile, 'r', encoding='utf-8') as file:
+            print(f'[] --- eolica: loading the simulation configuration from {yamlfile}')
             config = yaml.safe_load(file)
             self.config = munch.munchify(config)
 
@@ -45,8 +50,9 @@ class EolicaSimulation():
         '''
         modelname = self.config.model_type
         if modelname == 'Bastankhah_PorteAgel_2014':
+            print(f'[] --- eolica: making the Bastankhah_PorteAgel_2014 model')
             self.model = Bastankhah_PorteAgel_2014(self.park.site, self.park.turbines, k=self.config.model_parameters['k'])
-
+            print(f'[] --- eolica: done making the Bastankhah_PorteAgel_2014 model')
         else:
             print(f'[] --- eolica: ERROR: you did not specify a proper wind forecasting model!')
             print(f'[] --- eolica: options are: [Bastankhah_PorteAgel_2014,]')
