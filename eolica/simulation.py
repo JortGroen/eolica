@@ -4,6 +4,7 @@ import pandas as pd
 from py_wake.flow_map import HorizontalGrid
 import itertools, yaml, munch, os
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
+from py_wake.site.shear import PowerShear
 from eolica import utils
 from eolica.dataset import EolicaDataset
 
@@ -153,7 +154,13 @@ class EolicaSimulation():
         '''
 
         #dataset.df.ws = utils.utils.extrapolate_wind_speed_logarithmic(dataset.df.ws,10,100,self.park.config.roughness) ## DANGER!!!!
-        dataset.df.ws = utils.utils.extrapolate_wind_speed(dataset.df.ws,10,100)
+        ## if the simulation config gives the height of the input wind speed, e.g. wind_speed_heights: {input: 80},
+        ## py_wake scales it to each turbine's own hub height (power law); otherwise it is taken as 10 m wind, extrapolated to 100 m
+        heights = self.config.get('wind_speed_heights') or {}
+        if 'input' in heights:
+            self.park.site.shear = PowerShear(h_ref=heights['input'], alpha=heights.get('alpha', 0.14))
+        else:
+            dataset.df.ws = utils.utils.extrapolate_wind_speed(dataset.df.ws,10,100)
 
         self.sim_res = self.model(self.park.xs, self.park.ys,
                              wd=dataset.df.wd,
